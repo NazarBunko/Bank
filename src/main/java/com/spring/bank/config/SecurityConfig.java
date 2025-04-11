@@ -31,11 +31,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    /*@Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/app/welcome").permitAll()
-                        .requestMatchers("/app/**").authenticated())
+                .authorizeHttpRequests(auth -> auth.requestMatchers("/**").permitAll())
                 .formLogin((AbstractAuthenticationFilterConfigurer::permitAll)).build();
-    }*/
+    }
 }

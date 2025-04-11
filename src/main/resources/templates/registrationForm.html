@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Реєстрація</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e6d4f6, #fbd5d5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 520px;
+            position: relative;
+        }
+
+        .form-container h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #00796b;
+            outline: none;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 15px 30px;
+            background-color: #ff5f5f;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-group button:hover {
+            background-color: #e84848;
+        }
+
+        .form-group .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none; /* Спочатку ховаємо повідомлення */
+        }
+
+        .form-group input.invalid,
+        .form-group select.invalid {
+            border-color: #e74c3c; /* Червоний контур для полів з помилками */
+        }
+
+        .form-group input.invalid + .error-message,
+        .form-group select.invalid + .error-message {
+            display: block; /* Показуємо повідомлення, якщо є помилка */
+        }
+
+        .form-group select {
+            height: 40px;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group input[type="date"] {
+            height: 40px;
+        }
+
+        .form-group input[type="text"]:disabled,
+        .form-group select:disabled {
+            background-color: #f0f0f0;
+        }
+
+        /* Стиль для кнопки хрестика */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: transparent;
+            border: none;
+            font-size: 20px;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .close-button:hover {
+            color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <!-- Кнопка хрестик для закриття форми -->
+    <button class="close-button" aria-label="Закрити форму" onclick="window.location.href='/'">&#10005;</button>
+
+    <h2>Реєстрація</h2>
+    <form id="clientForm" action="/signIn" method="post">
+        <div class="form-group">
+            <label for="fullName">Повне ім’я</label>
+            <input type="text" id="fullName" name="fullName" required>
+            <div class="error-message">Поле є обов'язковим</div>
+        </div>
+        <div class="form-group">
+            <label for="birthDate">Дата народження</label>
+            <input type="date" id="birthDate" name="birthDate" required>
+        </div>
+        <div class="form-group">
+            <label for="passportNumber">Номер паспорта</label>
+            <input type="text" id="passportNumber" name="passportNumber" required>
+        </div>
+        <div class="form-group">
+            <label for="address">Адреса</label>
+            <input type="text" id="address" name="address">
+        </div>
+        <div class="form-group">
+            <label for="phone">Телефон</label>
+            <input type="text" id="phone" name="phone" pattern="^\+380\d{9}$" maxlength="13" title="Телефон повинен починатися з +380 і мати 13 цифр" required>
+            <div class="error-message">Поле є обов'язковим і має починатись з +380</div>
+        </div>
+        <div class="form-group">
+            <label for="clientType">Тип клієнта</label>
+            <select id="clientType" name="clientType" required>
+                <option value="Фізична особа">Фізична особа</option>
+                <option value="Юридична особа">Юридична особа</option>
+            </select>
+            <div class="error-message">Поле є обов'язковим</div>
+        </div>
+        <div class="form-group">
+            <label for="login">Логін</label>
+            <input type="text" id="login" name="login" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Пароль</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <div class="form-group">
+            <label for="accountType">Тип акаунту</label>
+            <select id="accountType" name="accountType" required>
+                <option value="преміум">Преміум</option>
+                <option value="звичайний">Звичайний</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <button type="submit">Зареєструватись</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    // Отримуємо форму
+    const form = document.getElementById('clientForm');
+
+    // Функція для валідації форми
+    form.addEventListener('submit', function(event) {
+        let valid = true;
+
+        // Перевіряємо кожне поле на порожнечу
+        const requiredFields = form.querySelectorAll('[required]');
+        requiredFields.forEach(function(field) {
+            if (!field.value.trim()) {
+                field.classList.add('invalid'); // Додаємо клас для червоного контур
+                valid = false;
+            } else {
+                field.classList.remove('invalid'); // Видаляємо клас, якщо поле заповнене
+            }
+        });
+
+        // Якщо є помилки, не дозволяємо надіслати форму
+        if (!valid) {
+            event.preventDefault();
+        }
+    });
+</script>
+
+</body>
+</html>

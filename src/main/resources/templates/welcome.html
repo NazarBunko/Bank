@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Банк у телефоні</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e6d4f6, #fbd5d5);
+      color: #333;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 50px;
+      background-color: white;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    header .logo {
+      font-weight: bold;
+      font-size: 22px;
+    }
+
+    nav a {
+      margin-left: 30px;
+      text-decoration: none;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+    }
+
+    .offer-box {
+      max-width: 550px;
+      background-color: white;
+      padding: 40px;
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+      text-align: center;
+    }
+
+    .offer-box h1 {
+      font-size: 30px;
+      margin-bottom: 15px;
+      color: #3a2f61;
+    }
+
+    .offer-box p {
+      font-size: 18px;
+      color: #555;
+      margin-bottom: 30px;
+    }
+
+    .register-button {
+      background-color: #ff5f5f;
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-bottom: 15px;
+    }
+
+    .register-button:hover {
+      background-color: #e84848;
+    }
+
+    .features {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-top: 60px;
+      flex-wrap: wrap;
+    }
+
+    .feature {
+      background-color: white;
+      border-radius: 16px;
+      padding: 30px;
+      width: 260px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+    }
+
+    .feature h3 {
+      margin-top: 0;
+      color: #3a2f61;
+    }
+
+    .feature p {
+      color: #666;
+    }
+
+    .login-text {
+      font-size: 16px;
+      color: #555;
+      margin-bottom: -20px;
+    }
+
+    .login-text a {
+      color: #6c47ff;
+      text-decoration: none;
+      font-weight: 500;
+      margin-left: 5px;
+    }
+
+    /* Медіа запити для адаптивності */
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .main {
+        padding: 40px 20px;
+      }
+
+      .offer-box {
+        padding: 20px;
+        max-width: 100%;
+      }
+
+      .features {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .feature {
+        width: 100%;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo" aria-label="Your Bank Logo">yourbank</div>
+  <nav>
+    <a href="#">Картки</a>
+    <a href="#">ФОП</a>
+    <a href="#">Депозити</a>
+    <a href="#">Еквайринг</a>
+  </nav>
+</header>
+
+<div class="main">
+  <div class="offer-box">
+    <h1>Банк у телефоні</h1>
+    <p>Отримайте персональний кредитний ліміт без походу в банк.</p>
+    <div class="top-section">
+      <button class="register-button" aria-label="Зареєструватися" onclick="window.location.href='/signIn'">Зареєструватись</button>
+      <div class="login-text">
+        Є обліковий запис?
+        <a href="/logIn" aria-label="Перейти до сторінки входу">Увійти</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="features">
+  <div class="feature">
+    <h3>Без комісій</h3>
+    <p>Жодних прихованих платежів. Все прозоро та зручно.</p>
+  </div>
+  <div class="feature">
+    <h3>Перекази 24/7</h3>
+    <p>Миттєві перекази друзям і рідним у будь-який час доби.</p>
+  </div>
+  <div class="feature">
+    <h3>Кешбек</h3>
+    <p>Отримуйте кешбек за повсякденні покупки прямо на картку.</p>
+  </div>
+</div>
+
+</body>
+</html>

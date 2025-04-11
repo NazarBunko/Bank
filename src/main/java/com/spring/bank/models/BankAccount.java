@@ -18,8 +18,13 @@ public class BankAccount {
     @JoinColumn(name = "ClientID", nullable = false)
     private Integer clientId;
 
+    @NotNull
+    @Length(min = 4, max = 100)
+    @Column(name = "Login", nullable = false)
+    private String login;
+
     @NotBlank
-    @Length(min = 6, max = 100)
+    @Length(min = 4, max = 100)
     @Column(name = "Password", nullable = false)
     private String password;
 
@@ -27,17 +32,25 @@ public class BankAccount {
     @Column(name = "Balance")
     private Double balance;
 
-    @Length(max = 50)
-    @Column(name = "AccountType")
-    private String accountType;
-
     public BankAccount() {}
 
-    public BankAccount(Integer clientId, String password, String accountType) {
-        this.accountType = accountType;
+    public BankAccount(Integer clientId, String login, String password) {
+        this.login = login;
         this.password = password;
         this.balance = 0.0;
         this.clientId = clientId;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
     }
 
     public Integer getId() {
@@ -64,14 +77,6 @@ public class BankAccount {
         this.balance = balance;
     }
 
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -86,7 +91,6 @@ public class BankAccount {
                 "id=" + id +
                 ", client=" + clientId +
                 ", balance=" + balance +
-                ", accountType='" + accountType + '\'' +
                 ", password='********'" +
                 '}';
     }
