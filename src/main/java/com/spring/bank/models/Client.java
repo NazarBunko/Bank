@@ -23,7 +23,7 @@ public class Client {
 
     @NotNull
     @Column(name = "BirthDate", nullable = false)
-    private java.time.LocalDate birthDate;
+    private String birthDate;
 
     @NotNull
     @Length(min = 6, max = 20)
@@ -40,6 +40,17 @@ public class Client {
     @Length(max = 50)
     @Column(name = "ClientType")
     private String clientType;
+
+    public Client() {}
+
+    public Client(String fullName, String birthDate, String passportNumber, String address, String clientType, String phone) {
+        this.fullName = fullName;
+        this.birthDate = birthDate;
+        this.passportNumber = passportNumber;
+        this.address = address;
+        this.clientType = clientType;
+        this.phone = phone;
+    }
 
     public Integer getId() {
         return id;
@@ -65,11 +76,11 @@ public class Client {
         this.address = address;
     }
 
-    public LocalDate getBirthDate() {
+    public String getBirthDate() {
         return birthDate;
     }
 
-    public void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(String birthDate) {
         this.birthDate = birthDate;
     }
 

@@ -7,7 +7,7 @@ import org.hibernate.validator.constraints.Length;
 
 @Data
 @Entity
-@Table(name = "BankAccount")
+@Table(name = "Bank_Account")
 public class BankAccount {
 
     @Id
@@ -15,22 +15,30 @@ public class BankAccount {
     private Integer id;
 
     @NotNull
-    @ManyToOne
     @JoinColumn(name = "ClientID", nullable = false)
-    private Client client;
+    private Integer clientId;
 
-    @NotNull
-    @Length(min = 10, max = 30)
-    @Column(name = "AccountNumber", nullable = false, unique = true)
-    private String accountNumber;
+    @NotBlank
+    @Length(min = 6, max = 100)
+    @Column(name = "Password", nullable = false)
+    private String password;
 
-    @Positive
+    @DecimalMin(value = "0.00")
     @Column(name = "Balance")
     private Double balance;
 
     @Length(max = 50)
     @Column(name = "AccountType")
     private String accountType;
+
+    public BankAccount() {}
+
+    public BankAccount(Integer clientId, String password, String accountType) {
+        this.accountType = accountType;
+        this.password = password;
+        this.balance = 0.0;
+        this.clientId = clientId;
+    }
 
     public Integer getId() {
         return id;
@@ -40,20 +48,12 @@ public class BankAccount {
         this.id = id;
     }
 
-    public Client getClient() {
-        return client;
+    public Integer getClientId() {
+        return clientId;
     }
 
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    public void setAccountNumber(String accountNumber) {
-        this.accountNumber = accountNumber;
+    public void setClient(Integer clientId) {
+        this.clientId = clientId;
     }
 
     public Double getBalance() {
@@ -72,14 +72,22 @@ public class BankAccount {
         this.accountType = accountType;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     @Override
     public String toString() {
         return "BankAccount{" +
                 "id=" + id +
-                ", client=" + client +
-                ", accountNumber='" + accountNumber + '\'' +
+                ", client=" + clientId +
                 ", balance=" + balance +
                 ", accountType='" + accountType + '\'' +
+                ", password='********'" +
                 '}';
     }
 }
