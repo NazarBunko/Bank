@@ -37,19 +37,20 @@ public class MainController {
                             @RequestParam String clientType,
                             @RequestParam String password,
                             @RequestParam String accountType*/) {
-        String fullName = "Дмитро Ковальчук";
-        String birthDate = "2000-02-10";
-        String passwordNumber = "AB123459";
-        String address = "вул. Свободи, 17";
-        String phone = "+380976949801";
-        String clientType = "звичайний";
+        String fullName = "Михайло Вороненко";
+        String birthDate = "1996-11-30";
+        String passwordNumber = "AB123462";
+        String address = "вул. Сороки, 43";
+        String phone = "+380784569832";
+        String clientType = "преміум";
+        String login = "user1";
         String password = "123456";
         String accountType = "депозитний";
         try{
             Client client = new Client(fullName, birthDate, passwordNumber, address, phone, clientType);
             clientRepository.addClient(client);
             client = clientRepository.getLastAddedClient();
-            BankAccount bankAccount = new BankAccount(client.getId(), password, accountType);
+            BankAccount bankAccount = new BankAccount(client.getId(), login, password, accountType);
             bankAccountRepository.addAccount(bankAccount);
             System.out.println("Client added");
             return "Client added successfully";
