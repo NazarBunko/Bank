@@ -32,9 +32,14 @@ public class BankAccount {
     @Column(name = "Balance")
     private Double balance;
 
+    @Length(max = 50)
+    @Column(name = "AccountType")
+    private String accountType;
+
     public BankAccount() {}
 
-    public BankAccount(Integer clientId, String login, String password) {
+    public BankAccount(Integer clientId, String login, String password, String accountType) {
+        this.accountType = accountType;
         this.login = login;
         this.password = password;
         this.balance = 0.0;
@@ -77,6 +82,14 @@ public class BankAccount {
         this.balance = balance;
     }
 
+    public String getAccountType() {
+        return accountType;
+    }
+
+    public void setAccountType(String accountType) {
+        this.accountType = accountType;
+    }
+
     public String getPassword() {
         return password;
     }
@@ -91,6 +104,7 @@ public class BankAccount {
                 "id=" + id +
                 ", client=" + clientId +
                 ", balance=" + balance +
+                ", accountType='" + accountType + '\'' +
                 ", password='********'" +
                 '}';
     }

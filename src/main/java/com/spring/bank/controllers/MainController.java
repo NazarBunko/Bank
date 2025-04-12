@@ -4,23 +4,21 @@ import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.Client;
 import com.spring.bank.repositories.BankAccountRepository;
 import com.spring.bank.repositories.ClientRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Date;
 
 @Controller
 public class MainController {
+    private ClientRepository clientRepository;
+    private BankAccountRepository bankAccountRepository;
 
-    private final ClientRepository clientRepository;
-    private final BankAccountRepository bankAccountRepository;
-
-    @Autowired
-    public MainController(ClientRepository clientRepository, BankAccountRepository bankAccountRepository) {
-        this.clientRepository = clientRepository;
-        this.bankAccountRepository = bankAccountRepository;
+    public MainController() {
+        clientRepository = new ClientRepository();
+        bankAccountRepository = new BankAccountRepository();
     }
 
     @GetMapping("/")
@@ -29,46 +27,46 @@ public class MainController {
     }
 
     @GetMapping("/signIn")
-    public String newAccount() {
+    public String signIn() {
         return "registrationForm";
     }
 
     @GetMapping("/logIn")
-    public String login() {
+    public String logIn() {
         return "loginForm";
     }
 
     @PostMapping("/signIn")
-    public String newClient(@RequestParam String fullName,
+    public String addClient(@RequestParam String fullName,
                             @RequestParam java.time.LocalDate birthDate,
-                            @RequestParam String passportNumber,
+                            @RequestParam String passwordNumber,
                             @RequestParam String address,
                             @RequestParam String phone,
                             @RequestParam String clientType,
                             @RequestParam String login,
-                            @RequestParam String password) {
-
-        try {
-            Client client = new Client(fullName, birthDate, passportNumber, phone, address, clientType);
+                            @RequestParam String password,
+                            @RequestParam String accountType) {
+        try{
+            Client client = new Client(fullName, birthDate, passwordNumber, address, phone, clientType);
             clientRepository.addClient(client);
             client = clientRepository.getLastAddedClient();
-            BankAccount bankAccount = new BankAccount(client.getId(), login, password);
+            BankAccount bankAccount = new BankAccount(client.getId(), login, password, accountType);
             bankAccountRepository.addAccount(bankAccount);
-            return "redirect:/app/success";
-        } catch (Exception e) {
-            return "redirect:/app/failed";
+            return "redirect:/success";
+        }
+        catch(Exception e){
+            return "redirect:/failed";
         }
     }
 
     @GetMapping("/success")
-    public String successPage(Model model) {
-        model.addAttribute("message", "Operation successful");
+    public String successfully() {
         return "successfully";
     }
 
     @GetMapping("/failed")
-    public String failedPage(Model model) {
-        model.addAttribute("messageError", "Something went wrong");
+    public String failed() {
         return "failed";
     }
+
 }
