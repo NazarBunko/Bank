@@ -7,6 +7,7 @@ import com.spring.bank.repositories.ClientRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -39,18 +40,17 @@ public class MainController {
     @PostMapping("/signIn")
     public String addClient(@RequestParam String fullName,
                             @RequestParam java.time.LocalDate birthDate,
-                            @RequestParam String passwordNumber,
+                            @RequestParam String passportNumber,
                             @RequestParam String address,
                             @RequestParam String phone,
                             @RequestParam String clientType,
                             @RequestParam String login,
-                            @RequestParam String password,
-                            @RequestParam String accountType) {
+                            @RequestParam String password) {
         try{
-            Client client = new Client(fullName, birthDate, passwordNumber, address, phone, clientType);
+            Client client = new Client(fullName, birthDate, passportNumber, phone, address, clientType);
             clientRepository.addClient(client);
             client = clientRepository.getLastAddedClient();
-            BankAccount bankAccount = new BankAccount(client.getId(), login, password, accountType);
+            BankAccount bankAccount = new BankAccount(client.getId(), login, password);
             bankAccountRepository.addAccount(bankAccount);
             return "redirect:/success";
         }
@@ -60,12 +60,14 @@ public class MainController {
     }
 
     @GetMapping("/success")
-    public String successfully() {
+    public String successfully(Model model) {
+        model.addAttribute("message", "Operation successful");
         return "successfully";
     }
 
     @GetMapping("/failed")
-    public String failed() {
+    public String failed(Model model) {
+        model.addAttribute("messageError", "Operation failed");
         return "failed";
     }
 

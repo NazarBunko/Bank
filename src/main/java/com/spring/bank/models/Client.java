@@ -43,7 +43,7 @@ public class Client {
 
     public Client() {}
 
-    public Client(String fullName, java.time.LocalDate birthDate, String passportNumber, String address, String clientType, String phone) {
+    public Client(String fullName, java.time.LocalDate birthDate, String passportNumber, String phone, String address, String clientType) {
         this.fullName = fullName;
         this.birthDate = birthDate;
         this.passportNumber = passportNumber;

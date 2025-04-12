@@ -28,21 +28,11 @@ public class BankAccount {
     @Column(name = "Password", nullable = false)
     private String password;
 
-    @DecimalMin(value = "0.00")
-    @Column(name = "Balance")
-    private Double balance;
-
-    @Length(max = 50)
-    @Column(name = "AccountType")
-    private String accountType;
-
     public BankAccount() {}
 
-    public BankAccount(Integer clientId, String login, String password, String accountType) {
-        this.accountType = accountType;
+    public BankAccount(Integer clientId, String login, String password) {
         this.login = login;
         this.password = password;
-        this.balance = 0.0;
         this.clientId = clientId;
     }
 
@@ -74,22 +64,6 @@ public class BankAccount {
         this.clientId = clientId;
     }
 
-    public Double getBalance() {
-        return balance;
-    }
-
-    public void setBalance(Double balance) {
-        this.balance = balance;
-    }
-
-    public String getAccountType() {
-        return accountType;
-    }
-
-    public void setAccountType(String accountType) {
-        this.accountType = accountType;
-    }
-
     public String getPassword() {
         return password;
     }
@@ -103,8 +77,6 @@ public class BankAccount {
         return "BankAccount{" +
                 "id=" + id +
                 ", client=" + clientId +
-                ", balance=" + balance +
-                ", accountType='" + accountType + '\'' +
                 ", password='********'" +
                 '}';
     }
