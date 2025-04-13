@@ -69,4 +69,29 @@ public class BankAccountRepository {
             if (session != null && session.isOpen()) session.close();
         }
     }
+
+    public BankAccount findByLogin(String login) {
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            BankAccount account = session.createQuery(
+                            "FROM BankAccount WHERE login = :login", BankAccount.class)
+                    .setParameter("login", login)
+                    .uniqueResult();
+            session.getTransaction().commit();
+            if (account != null) {
+                return account;
+            } else {
+                return null;
+            }
+        } catch (Exception e) {
+            System.out.println("Error '" + e.getMessage() + "' in method checkLogin()");
+            return null;
+        } finally {
+            if (session != null && session.isOpen()) session.close();
+        }
+    }
+
 }

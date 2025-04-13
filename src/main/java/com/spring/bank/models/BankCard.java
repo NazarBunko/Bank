@@ -5,6 +5,9 @@ import lombok.Data;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
+import java.util.Random;
+
 @Data
 @Entity
 @Table(name = "Bank_Card")
@@ -14,13 +17,24 @@ public class BankCard {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "BankAccountID", nullable = false)
+    @NotNull
+    @JoinColumn(name = "BankAccountID")
     private Integer bankAccountId;
 
-    @Column(name = "CardNumber", length = 16, unique = true, nullable = false)
+    @NotNull
+    @Column(name = "CardNumber", length = 16, unique = true)
     private String cardNumber;
 
-    @Column(name = "CardType", nullable = false)
+    @NotNull
+    @Column(name = "CVV")
+    private Integer cvv;
+
+    @NotNull
+    @Column(name = "EndDate")
+    private java.time.LocalDate endDate;
+
+    @NotNull
+    @Column(name = "CardType")
     private String cardType;
 
     @DecimalMin(value = "0.00")
@@ -29,10 +43,19 @@ public class BankCard {
 
     public BankCard() {}
 
-    public BankCard(Integer bankAccountId, String cardNumber, String cardType) {
+    public BankCard(Integer bankAccountId) {
         this.bankAccountId = bankAccountId;
-        this.cardNumber = cardNumber;
-        this.cardType = cardType;
+
+        StringBuilder cardNumber = new StringBuilder();
+        Random random = new Random();
+        for (int i = 0; i < 16; i++) {
+            cardNumber.append(random.nextInt(10)); // від 0 до 9
+        }
+        this.cardNumber = cardNumber.toString();
+        this.cardType = null;
+
+        this.endDate = LocalDate.now().plusYears(5);
+        this.cvv = 100 + random.nextInt(900);
     }
 
     public String getCardNumber() {
@@ -67,14 +90,24 @@ public class BankCard {
         this.bankAccountId = bankAccountId;
     }
 
+    public Integer getCvv() {
+        return cvv;
+    }
+
+    public LocalDate getEndDate() {
+        return endDate;
+    }
+
     @Override
     public String toString() {
         return "BankCard{" +
-                "bankAccountId=" + bankAccountId +
+                "id=" + id +
+                ", bankAccountId=" + bankAccountId +
                 ", cardNumber='" + cardNumber + '\'' +
+                ", cvv=" + cvv +
+                ", endDate=" + endDate +
                 ", cardType='" + cardType + '\'' +
                 ", balance=" + balance +
-                ", id=" + id +
                 '}';
     }
 }

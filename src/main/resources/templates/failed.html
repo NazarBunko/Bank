@@ -18,7 +18,7 @@
         .error-box {
             background: #fff;
             width: 300px;
-            height: 300px;
+            height: 320px;
             border-radius: 20px;
             box-shadow: 0 0 15px rgba(0,0,0,0.2);
             display: flex;
@@ -46,6 +46,14 @@
             font-size: 18px;
             color: #333;
         }
+
+        .hint {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #777;
+            position: absolute;
+            bottom: 10px;
+        }
     </style>
 </head>
 <body>
@@ -57,5 +65,17 @@
         <span th:text="${messageError}">Сталася помилка!</span>
     </div>
 </div>
+
+<div class="hint">Press any button to exit</div>
+
+<script>
+    document.addEventListener("keydown", () => {
+        window.location.href = "/logIn"; // заміни на потрібну сторінку
+    });
+
+    document.addEventListener("click", () => {
+        window.location.href = "/logIn"; // заміни на потрібну сторінку
+    });
+</script>
 </body>
 </html>

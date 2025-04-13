@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Відкриття картки</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    form {
+      background: #fff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 350px;
+      position: relative;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      margin-top: 5px;
+    }
+
+    .readonly {
+      background-color: #eee;
+    }
+
+    .checkbox {
+      margin-top: 15px;
+      display: flex;
+      align-items: center;
+    }
+
+    .checkbox input {
+      margin-right: 10px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .close-btn:hover {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+<form action="/addCard" method="post" th:object="${bankCard}">
+  <h2>Відкрити картку</h2>
+
+  <!-- Кнопка хрестика для закриття або переходу -->
+  <button type="button" class="close-btn" onclick="window.location.href='/dashboard'">&times;</button>
+
+  <!-- Відображення номера картки + приховане поле -->
+  <label>Номер картки</label>
+  <input type="text" th:value="*{cardNumber}" readonly class="readonly"/>
+  <input type="hidden" th:field="*{cardNumber}"/>
+
+  <!-- CVV -->
+  <label>CVV</label>
+  <input type="text" th:value="*{cvv}" readonly class="readonly"/>
+  <input type="hidden" th:field="*{cvv}"/>
+
+  <!-- Термін дії -->
+  <label>Термін дії</label>
+  <input type="text" th:value="${#temporals.format(bankCard.endDate, 'MM/yy')}" readonly class="readonly"/>
+  <input type="hidden" th:field="*{endDate}"/>
+
+  <!-- Тип картки -->
+  <label>Тип картки</label>
+  <select th:field="*{cardType}" required>
+    <option value="">-- Виберіть тип --</option>
+    <option value="Універсальна" th:selected="*{cardType == 'Універсальна'}">Універсальна</option>
+    <option value="Кредитна" th:selected="*{cardType == 'Кредитна'}">Кредитна</option>
+  </select>
+
+  <!-- Чекбокс -->
+  <div class="checkbox">
+    <input type="checkbox" id="agree" name="agree" required>
+    <label for="agree">Я погоджуюсь з правилами банку</label>
+  </div>
+
+  <button type="submit" class="submit-btn">Відкрити</button>
+</form>
+</body>
+</html>

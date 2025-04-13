@@ -3,23 +3,23 @@ package com.spring.bank.controllers;
 import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.Client;
 import com.spring.bank.repositories.BankAccountRepository;
+import com.spring.bank.repositories.BankCardRepository;
 import com.spring.bank.repositories.ClientRepository;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 
 @Controller
 public class MainController {
     private ClientRepository clientRepository;
     private BankAccountRepository bankAccountRepository;
+    private BankCardRepository bankCardRepository;
 
     public MainController() {
         clientRepository = new ClientRepository();
         bankAccountRepository = new BankAccountRepository();
+        bankCardRepository = new BankCardRepository();
     }
 
     @GetMapping("/")
@@ -27,14 +27,14 @@ public class MainController {
         return "welcome";
     }
 
-    @GetMapping("/signIn")
-    public String signIn() {
-        return "registrationForm";
-    }
-
     @GetMapping("/logIn")
     public String logIn() {
         return "loginForm";
+    }
+
+    @GetMapping("/signIn")
+    public String signIn() {
+        return "registrationForm";
     }
 
     @PostMapping("/signIn")
@@ -62,7 +62,7 @@ public class MainController {
     @GetMapping("/success")
     public String successfully(Model model) {
         model.addAttribute("message", "Operation successful");
-        return "successfully";
+        return "success";
     }
 
     @GetMapping("/failed")
@@ -70,5 +70,4 @@ public class MainController {
         model.addAttribute("messageError", "Operation failed");
         return "failed";
     }
-
 }

@@ -18,7 +18,7 @@
     .success-box {
       background: #fff;
       width: 300px;
-      height: 300px;
+      height: 320px;
       border-radius: 20px;
       box-shadow: 0 0 15px rgba(0,0,0,0.2);
       display: flex;
@@ -27,6 +27,7 @@
       justify-content: center;
       text-align: center;
       padding: 20px;
+      position: relative;
     }
 
     .checkmark {
@@ -35,7 +36,6 @@
       animation: bounce 0.5s 1s infinite;
     }
 
-    /* Анімація для скакаючої галочки */
     @keyframes bounce {
       0%, 100% { transform: scale(1) translateY(0); }
       50% { transform: scale(1.2) translateY(-10px); }
@@ -46,16 +46,43 @@
       font-size: 18px;
       color: #333;
     }
+
+    .hint {
+      margin-top: 25px;
+      font-size: 14px;
+      color: #777;
+      position: absolute;
+      bottom: 10px;
+    }
   </style>
 </head>
 <body>
 <div class="success-box">
   <div class="checkmark">
-    <i class="bi bi-check2-circle"></i> <!-- Галочка з Bootstrap -->
+    <i class="bi bi-check2-circle"></i>
   </div>
   <div class="message">
     <span th:text="${message}">Операцію виконано успішно!</span>
   </div>
 </div>
+
+<div class="hint">Press any button to exit</div>
+
+<script th:inline="javascript">
+  /*<![CDATA[*/
+  let hasAccount = /*[[${account != null}]]*/ false;
+
+  const targetUrl = hasAccount ? '/dashboard' : '/logIn';
+
+  document.addEventListener("keydown", () => {
+    window.location.href = targetUrl;
+  });
+
+  document.addEventListener("click", () => {
+    window.location.href = targetUrl;
+  });
+  /*]]>*/
+</script>
+
 </body>
 </html>
