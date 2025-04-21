@@ -5,8 +5,6 @@ import jakarta.validation.constraints.*;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
-import java.time.LocalDate;
-
 @Data
 @Entity
 @Table(name = "Client")

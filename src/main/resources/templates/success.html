@@ -68,11 +68,8 @@
 
 <div class="hint">Press any button to exit</div>
 
-<script th:inline="javascript">
-  /*<![CDATA[*/
-  let hasAccount = /*[[${account != null}]]*/ false;
-
-  const targetUrl = hasAccount ? '/dashboard' : '/logIn';
+<script>
+  const targetUrl = '/dashboard';
 
   document.addEventListener("keydown", () => {
     window.location.href = targetUrl;
@@ -81,7 +78,6 @@
   document.addEventListener("click", () => {
     window.location.href = targetUrl;
   });
-  /*]]>*/
 </script>
 
 </body>

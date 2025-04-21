@@ -49,13 +49,21 @@ public class BankCard {
         StringBuilder cardNumber = new StringBuilder();
         Random random = new Random();
         for (int i = 0; i < 16; i++) {
-            cardNumber.append(random.nextInt(10)); // від 0 до 9
+            cardNumber.append(random.nextInt(10));
         }
         this.cardNumber = cardNumber.toString();
         this.cardType = null;
 
         this.endDate = LocalDate.now().plusYears(5);
         this.cvv = 100 + random.nextInt(900);
+    }
+
+    public String getLastFourDigits() {
+        if (cardNumber != null && cardNumber.length() >= 4) {
+            return cardNumber.substring(cardNumber.length() - 4);
+        } else {
+            return "XXXX"; // або кидай виняток, якщо треба
+        }
     }
 
     public String getCardNumber() {

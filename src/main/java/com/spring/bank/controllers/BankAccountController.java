@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.smartcardio.Card;
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 public class BankAccountController {
@@ -31,13 +33,18 @@ public class BankAccountController {
 
     @GetMapping("/dashboard")
     public String showMainPage(Principal principal, Model model) {
-        String username = principal.getName();
-        BankAccount account = bankAccountRepository.findByLogin(username);
+        BankAccount account;
+        if(bankAccount == null) {
+            String username = principal.getName();
+            account = bankAccountRepository.findByLogin(username);
+            bankAccount = account;
+        } else{
+            account = bankAccount;
+        }
 
         model.addAttribute("account", account);
         model.addAttribute("client", clientRepository.getClientById(account.getClientId()));
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(account.getId()));
-        bankAccount = account;
         return "dashboard";
     }
 
@@ -62,12 +69,22 @@ public class BankAccountController {
             BankAccount account = bankAccountRepository.findByLogin(principal.getName());
             model.addAttribute("message", "Operation successful");
             model.addAttribute("account", account);
-            System.out.println("1");
             return "success";
         } catch (Exception e) {
-            System.out.println("2");
             model.addAttribute("messageError", "Operation failed");
             return "failed";
         }
+    }
+
+    @GetMapping("/replenish")
+    public String showReplenishForm(Model model) {
+        model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
+        return "replenish";
+    }
+
+    @GetMapping("/transfer")
+    public String showTransferForm(Model model) {
+        model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
+        return "transfer";
     }
 }

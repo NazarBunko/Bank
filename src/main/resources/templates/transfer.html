@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Переказ на картку</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #90caf9);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 320px;
+        }
+
+        .form-container h2 {
+            margin-top: 0;
+            text-align: center;
+            color: #1976d2;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: bold;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 10px;
+            background-color: #1976d2;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <h2>Переказ на іншу картку</h2>
+    <form th:action="@{/transfer}" method="post">
+        <label for="fromCard">Виберіть вашу картку</label>
+        <select id="fromCard" name="fromCard">
+            <option th:each="card : ${cards}"
+                    th:value="${card.cardNumber}"
+                    th:text="'Картка **** ' + ${card.getLastFourDigits()}">
+            </option>
+        </select>
+
+        <label for="toCard">Номер картки одержувача</label>
+        <input type="text" id="toCard" name="toCard" maxlength="16" pattern="\d{16}" required placeholder="Наприклад: 1234567812345678">
+
+        <label for="amount">Сума переказу</label>
+        <input type="number" id="amount" name="amount" min="1" step="0.01" required>
+
+        <label for="description">Опис (необов'язково)</label>
+        <textarea id="description" name="description" rows="3" placeholder="Наприклад: Подарунок або повернення боргу"></textarea>
+
+        <button type="submit">Переказати</button>
+    </form>
+</div>
+</body>
+</html>

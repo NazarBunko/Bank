@@ -5,49 +5,61 @@
   <title>Відкриття картки</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f2f5;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #e6d4f6, #fbd5d5);
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
+      margin: 0;
     }
 
-    form {
+    .form-container {
       background: #fff;
       padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      width: 350px;
+      border-radius: 10px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 520px;
       position: relative;
     }
 
     h2 {
       text-align: center;
       margin-bottom: 20px;
+      color: #333;
+      font-size: 22px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
     }
 
     label {
       display: block;
-      margin-top: 15px;
+      margin-bottom: 5px;
       font-weight: bold;
+      color: #555;
+      font-size: 14px;
     }
 
     input[type="text"],
     select {
       width: 100%;
-      padding: 8px;
-      border-radius: 5px;
+      padding: 10px;
       border: 1px solid #ccc;
-      margin-top: 5px;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
+      color: #555;
     }
 
-    .readonly {
+    input.readonly {
       background-color: #eee;
     }
 
     .checkbox {
-      margin-top: 15px;
+      margin-top: 10px;
       display: flex;
       align-items: center;
     }
@@ -58,73 +70,84 @@
 
     .submit-btn {
       width: 100%;
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #4CAF50;
+      padding: 15px 30px;
+      background-color: #ff5f5f;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
     }
 
-    .submit-btn:disabled {
-      background-color: #ccc;
-      cursor: not-allowed;
+    .submit-btn:hover {
+      background-color: #e84848;
     }
 
-    .close-btn {
+    .close-button {
       position: absolute;
       top: 10px;
       right: 10px;
-      background: none;
+      background: transparent;
       border: none;
       font-size: 20px;
-      color: #888;
+      color: #333;
       cursor: pointer;
     }
 
-    .close-btn:hover {
-      color: #333;
+    .close-button:hover {
+      color: #e74c3c;
     }
   </style>
 </head>
 <body>
-<form action="/addCard" method="post" th:object="${bankCard}">
+<div class="form-container">
+  <button class="close-button" onclick="window.location.href='/dashboard'">&#10005;</button>
+
   <h2>Відкрити картку</h2>
 
-  <!-- Кнопка хрестика для закриття або переходу -->
-  <button type="button" class="close-btn" onclick="window.location.href='/dashboard'">&times;</button>
+  <form action="/addCard" method="post" th:object="${bankCard}">
+    <!-- Номер картки -->
+    <div class="form-group">
+      <label>Номер картки</label>
+      <input type="text" th:value="*{cardNumber}" readonly class="readonly"/>
+      <input type="hidden" th:field="*{cardNumber}"/>
+    </div>
 
-  <!-- Відображення номера картки + приховане поле -->
-  <label>Номер картки</label>
-  <input type="text" th:value="*{cardNumber}" readonly class="readonly"/>
-  <input type="hidden" th:field="*{cardNumber}"/>
+    <!-- CVV -->
+    <div class="form-group">
+      <label>CVV</label>
+      <input type="text" th:value="*{cvv}" readonly class="readonly"/>
+      <input type="hidden" th:field="*{cvv}"/>
+    </div>
 
-  <!-- CVV -->
-  <label>CVV</label>
-  <input type="text" th:value="*{cvv}" readonly class="readonly"/>
-  <input type="hidden" th:field="*{cvv}"/>
+    <!-- Термін дії -->
+    <div class="form-group">
+      <label>Термін дії</label>
+      <input type="text" th:value="${#temporals.format(bankCard.endDate, 'MM/yy')}" readonly class="readonly"/>
+      <input type="hidden" th:field="*{endDate}"/>
+    </div>
 
-  <!-- Термін дії -->
-  <label>Термін дії</label>
-  <input type="text" th:value="${#temporals.format(bankCard.endDate, 'MM/yy')}" readonly class="readonly"/>
-  <input type="hidden" th:field="*{endDate}"/>
+    <!-- Тип картки -->
+    <div class="form-group">
+      <label>Тип картки</label>
+      <select th:field="*{cardType}" required>
+        <option value="">-- Виберіть тип --</option>
+        <option value="Універсальна" th:selected="*{cardType == 'Універсальна'}">Універсальна</option>
+        <option value="Кредитна" th:selected="*{cardType == 'Кредитна'}">Кредитна</option>
+      </select>
+    </div>
 
-  <!-- Тип картки -->
-  <label>Тип картки</label>
-  <select th:field="*{cardType}" required>
-    <option value="">-- Виберіть тип --</option>
-    <option value="Універсальна" th:selected="*{cardType == 'Універсальна'}">Універсальна</option>
-    <option value="Кредитна" th:selected="*{cardType == 'Кредитна'}">Кредитна</option>
-  </select>
+    <!-- Чекбокс -->
+    <div class="form-group checkbox">
+      <input type="checkbox" id="agree" name="agree" required>
+      <label for="agree">Я погоджуюсь з правилами банку</label>
+    </div>
 
-  <!-- Чекбокс -->
-  <div class="checkbox">
-    <input type="checkbox" id="agree" name="agree" required>
-    <label for="agree">Я погоджуюсь з правилами банку</label>
-  </div>
-
-  <button type="submit" class="submit-btn">Відкрити</button>
-</form>
+    <!-- Кнопка -->
+    <button type="submit" class="submit-btn">Відкрити</button>
+  </form>
+</div>
 </body>
 </html>

@@ -49,7 +49,7 @@ public class SecurityConfig {
                         .loginPage("/logIn")
                         .loginProcessingUrl("/logIn")
                         .defaultSuccessUrl("/dashboard", true)
-                        .failureUrl("/logIn?error=true")
+                        .failureUrl("/logIn")
                         .permitAll()
                 )
                 .logout(logout -> logout
