@@ -87,4 +87,10 @@ public class BankAccountController {
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
         return "transfer";
     }
+
+    @GetMapping("/mobile")
+    public String showMobileForm(Model model) {
+        model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
+        return "mobile";
+    }
 }

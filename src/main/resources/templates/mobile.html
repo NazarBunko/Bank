@@ -2,7 +2,7 @@
 <html lang="uk" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>Поповнення рахунку</title>
+  <title>Поповнення телефону</title>
   <style>
     body {
       margin: 0;
@@ -35,7 +35,7 @@
       font-weight: bold;
     }
 
-    select, input[type="number"] {
+    select, input[type="text"], input[type="number"] {
       width: 100%;
       padding: 8px;
       border-radius: 6px;
@@ -43,16 +43,10 @@
       box-sizing: border-box;
     }
 
-    .payment-methods {
-      margin-top: 15px;
-    }
-
-    .payment-methods label {
-      font-weight: normal;
-    }
-
-    .payment-methods input {
-      margin-right: 8px;
+    .balance-display {
+      margin-top: 6px;
+      font-size: 14px;
+      color: #555;
     }
 
     button {
@@ -77,37 +71,49 @@
       right: 15px;
       text-decoration: none;
       font-size: 20px;
-      color: #333;
+      color: #666;
       font-weight: bold;
-      cursor: pointer;
     }
 
     .close-link:hover {
       color: #e74c3c;
     }
   </style>
+  <script th:inline="javascript">
+    function updateBalance() {
+      let cards = /*[[${cards}]]*/ [];
+      let selectedCardNumber = document.getElementById("fromCard").value;
+      let balanceDisplay = document.getElementById("balanceDisplay");
+
+      let selectedCard = cards.find(card => card.cardNumber === selectedCardNumber);
+      if (selectedCard) {
+        balanceDisplay.textContent = "Баланс: " + selectedCard.balance.toFixed(2) + " грн";
+      } else {
+        balanceDisplay.textContent = "";
+      }
+    }
+  </script>
 </head>
 <body>
 <div class="form-container">
-  <a href="/dashboard" class="close-link" aria-label="Закрити форму">&#10005;</a>
-  <h2>Поповнення рахунку</h2>
-  <form th:action="@{/replenish}" method="post">
-    <label for="card">Виберіть картку</label>
-    <select id="card" name="card" onchange="updateBalance()">
+  <a href="/dashboard" class="close-link">&#10005;</a>
+  <h2>Поповнення мобільного</h2>
+  <form th:action="@{/mobile}" method="post">
+    <label for="fromCard">Виберіть картку</label>
+    <select id="fromCard" name="fromCard" onchange="updateBalance()">
       <option th:each="card : ${cards}"
               th:value="${card.cardNumber}"
               th:text="'Картка **** ' + ${card.getLastFourDigits()} + ' (баланс: ' + ${card.balance} + ' грн)'">
       </option>
     </select>
 
+    <div class="balance-display" id="balanceDisplay"></div>
+
+    <label for="phone">Номер телефону</label>
+    <input type="text" id="phone" name="phone" pattern="\+380\d{9}" maxlength="13" required placeholder="+380XXXXXXXXX">
+
     <label for="amount">Сума поповнення</label>
     <input type="number" id="amount" name="amount" min="1" step="0.01" required>
-
-    <div class="payment-methods">
-      <label><input type="radio" name="paymentMethod" value="applepay" required> Apple Pay</label><br>
-      <label><input type="radio" name="paymentMethod" value="googlepay"> Google Pay</label><br>
-      <label><input type="radio" name="paymentMethod" value="othercard"> Інша картка</label>
-    </div>
 
     <button type="submit">Поповнити</button>
   </form>

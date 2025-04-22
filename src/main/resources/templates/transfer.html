@@ -20,6 +20,7 @@
             border-radius: 10px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
             width: 320px;
+            position: relative;
         }
 
         .form-container h2 {
@@ -61,17 +62,33 @@
         button:hover {
             background-color: #1565c0;
         }
+
+        .close-link {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #333;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-link:hover {
+            color: #e74c3c;
+        }
     </style>
 </head>
 <body>
 <div class="form-container">
+    <a href="/dashboard" class="close-link" aria-label="Закрити форму">&#10005;</a>
     <h2>Переказ на іншу картку</h2>
     <form th:action="@{/transfer}" method="post">
         <label for="fromCard">Виберіть вашу картку</label>
-        <select id="fromCard" name="fromCard">
+        <select id="fromCard" name="fromCard" onchange="updateBalance()">
             <option th:each="card : ${cards}"
                     th:value="${card.cardNumber}"
-                    th:text="'Картка **** ' + ${card.getLastFourDigits()}">
+                    th:text="'Картка **** ' + ${card.getLastFourDigits()} + ' (баланс: ' + ${card.balance} + ' грн)'">
             </option>
         </select>
 

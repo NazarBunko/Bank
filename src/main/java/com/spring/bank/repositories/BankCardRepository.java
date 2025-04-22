@@ -106,6 +106,34 @@ public class BankCardRepository {
         }
     }
 
+    public boolean mobile(String fromCardNumber, String phone, Double amount) {
+        Transaction transaction;
+
+        try (Session session = factory.openSession()) {
+            BankCard senderCard = findCardByNumber(fromCardNumber);
+            if (senderCard == null) {
+                System.out.println("Одна з карток не знайдена");
+                return false;
+            }
+            if (senderCard.getBalance() < amount) {
+                System.out.println("Недостатньо коштів");
+                return false;
+            }
+            transaction = session.beginTransaction();
+            senderCard.setBalance(senderCard.getBalance() - amount);
+            session.update(senderCard);
+            transaction.commit();
+            boolean newTransaction = createTransfer(fromCardNumber, phone, amount, "mobile top-up");
+            if (newTransaction) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public boolean createTransfer(String fromCardNumber, String toCardNumber, Double amount, String description) {
         Transaction transaction;
 

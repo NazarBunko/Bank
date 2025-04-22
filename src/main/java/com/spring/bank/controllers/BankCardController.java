@@ -52,4 +52,21 @@ public class BankCardController {
             return "failed";
         }
     }
+
+    @PostMapping("/mobile")
+    public String transfer(
+            @RequestParam("fromCard") String fromCard,
+            @RequestParam("phone") String phone,
+            @RequestParam("amount") Double amount,
+            Model model) {
+
+        boolean success = bankCardRepository.mobile(fromCard, phone, amount);
+        if (success) {
+            model.addAttribute("message", "Переказ успішно виконано!");
+            return "success";
+        } else {
+            model.addAttribute("messageError", "Помилка під час переказу. Перевірте дані та спробуйте ще раз.");
+            return "failed";
+        }
+    }
 }
