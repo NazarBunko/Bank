@@ -15,9 +15,12 @@ public class Credit {
     private Integer id;
 
     @NotNull
-    @ManyToOne
-    @JoinColumn(name = "ClientID", nullable = false)
-    private Client client;
+    @Column(name = "ClientID", nullable = false)
+    private Integer client;
+
+    @NotNull
+    @Column(name = "CardNumber", nullable = false)
+    private String cardNumber;
 
     @NotNull
     @Positive
@@ -51,12 +54,20 @@ public class Credit {
         this.id = id;
     }
 
-    public Client getClient() {
+    public Integer getClient() {
         return client;
     }
 
-    public void setClient(Client client) {
+    public void setClient(Integer client) {
         this.client = client;
+    }
+
+    public String getCardNumber() {
+        return cardNumber;
+    }
+
+    public void setCardNumber(String cardNumber) {
+        this.cardNumber = cardNumber;
     }
 
     public Double getAmount() {

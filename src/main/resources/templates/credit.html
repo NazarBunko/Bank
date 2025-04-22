@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="uk" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Оформлення кредиту</title>
+    <style>
+        /* ваш фірмовий стиль */
+        body{
+            font-family:'Segoe UI',Tahoma,Verdana,sans-serif;
+            background:linear-gradient(135deg,#e6d4f6,#fbd5d5);
+            display:flex;justify-content:center;align-items:center;
+            height:100vh;margin:0
+        }
+        .form-container{
+            background:#fff;padding:30px 30px 20px;border-radius:10px;
+            box-shadow:0 5px 20px rgba(0,0,0,.1);
+            width:100%;max-width:520px;position:relative
+        }
+        h2{text-align:center;margin:0 0 20px;color:#333;font-size:22px}
+        .form-group{margin-bottom:15px}
+        .form-group label{display:block;margin-bottom:5px;font-weight:700;color:#555;font-size:14px}
+        .form-group select,.form-group input{
+            width:100%;padding:10px;border:1px solid #ccc;border-radius:8px;
+            box-sizing:border-box;font-size:14px;color:#555
+        }
+        .form-group select:focus,.form-group input:focus{border-color:#00796b;outline:none}
+        button{
+            width:100%;padding:15px 30px;background:#ff5f5f;color:#fff;border:none;
+            border-radius:8px;font-size:16px;cursor:pointer;transition:.3s
+        }
+        button:hover{background:#e84848}
+        .close-btn{
+            position:absolute;top:10px;right:10px;background:none;border:none;
+            font-size:20px;color:#333;cursor:pointer;text-decoration:none
+        }
+        .close-btn:hover{color:#e74c3c}
+    </style>
+</head>
+<body>
+<div class="form-container">
+    <a href="/dashboard" class="close-btn" aria-label="Закрити">&#10005;</a>
+    <h2>Оформлення кредиту</h2>
+
+    <form th:action="@{/credit}" method="post">
+        <!-- картка -->
+        <div class="form-group">
+            <label for="card">Виберіть картку</label>
+            <select id="card" name="cardNumber" required>
+                <option value="" disabled selected>-- Оберіть картку --</option>
+                <option th:each="card : ${cards}"
+                        th:value="${card.cardNumber}"
+                        th:text="'Картка **** '+${card.getLastFourDigits()}+' (баланс: '+${card.balance}+' грн)'">
+                </option>
+            </select>
+        </div>
+
+        <!-- сума -->
+        <div class="form-group">
+            <label for="amount">Сума кредиту, грн</label>
+            <input type="number" id="amount" name="amount" min="1000" step="100"
+                   placeholder="Введіть суму" required>
+        </div>
+
+        <!-- відсоткова ставка (фіксовано 13 %) -->
+        <div class="form-group">
+            <label for="rate">Відсоткова ставка, %</label>
+            <select id="rate" name="InterestRate" required>
+                <option value="13" selected>13 %</option>
+            </select>
+        </div>
+
+        <!-- термін -->
+        <div class="form-group">
+            <label for="term">Термін, міс</label>
+            <select id="term" name="TermMonths" required>
+                <option value="6">6</option>
+                <option value="12" selected>12</option>
+                <option value="18">18</option>
+                <option value="24">24</option>
+            </select>
+        </div>
+
+        <button type="submit">Отримати кредит</button>
+    </form>
+</div>
+</body>
+</html>

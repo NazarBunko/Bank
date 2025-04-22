@@ -1,6 +1,7 @@
 package com.spring.bank.repositories;
 
 import com.spring.bank.models.BankCard;
+import com.spring.bank.models.Credit;
 import com.spring.bank.models.PaymentTransaction;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -124,6 +125,34 @@ public class BankCardRepository {
             session.update(senderCard);
             transaction.commit();
             boolean newTransaction = createTransfer(fromCardNumber, phone, amount, "mobile top-up");
+            if (newTransaction) {
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean credit(String toCardNumber, Double amount, Credit credit) {
+        Transaction transaction;
+
+        try (Session session = factory.openSession()) {
+            BankCard receiverCard = findCardByNumber(toCardNumber);
+            if (receiverCard == null) {
+                System.out.println("Картка не знайдена");
+                return false;
+            }
+            if(credit == null) {
+                System.out.println("Кредит не знайдений");
+            }
+            transaction = session.beginTransaction();
+            receiverCard.setBalance(receiverCard.getBalance() + amount);
+            session.update(receiverCard);
+            session.save(credit);
+            transaction.commit();
+            boolean newTransaction = createTransfer("bank", toCardNumber, amount, "credit");
             if (newTransaction) {
                 return true;
             }

@@ -2,6 +2,7 @@ package com.spring.bank.controllers;
 
 import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.BankCard;
+import com.spring.bank.models.Credit;
 import com.spring.bank.repositories.BankAccountRepository;
 import com.spring.bank.repositories.BankCardRepository;
 import com.spring.bank.repositories.ClientRepository;
@@ -11,7 +12,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class BankAccountController {
@@ -95,4 +101,60 @@ public class BankAccountController {
     public String showPaymentsForm() {
         return "payments";
     }
+
+    @GetMapping("/credit")
+    public String showCreditForm(Model model) {
+        List<BankCard> allCards = bankCardRepository.findByBankAccountId(bankAccount.getId());
+        List<BankCard> creditCards = new ArrayList<>();
+        for(int i = 0; i < allCards.size(); i++){
+            if(allCards.get(i).getCardType().equals("Кредитна")){
+                creditCards.add(allCards.get(i));
+            }
+        }
+        model.addAttribute("cards", creditCards);
+        return "credit";
+    }
+
+    @PostMapping("/credit")
+    public String newCredit(@RequestParam String cardNumber,
+                            @RequestParam double amount,
+                            @RequestParam double InterestRate,
+                            @RequestParam int TermMonths,
+                            Model model) {
+
+        Integer clientId = bankAccount.getClientId();
+
+        if (clientId == null) {
+            model.addAttribute("messageError", "Картку не знайдено");
+            return "failed";
+        }
+
+        double monthlyRate   = InterestRate / 100.0 / 12.0;
+        double monthlyPayment = (amount * monthlyRate) /
+                (1.0 - Math.pow(1.0 + monthlyRate, -TermMonths));
+
+        monthlyPayment = Math.round(monthlyPayment * 100.0) / 100.0;
+
+        Credit credit = new Credit();
+        credit.setClient(clientId);
+        credit.setCardNumber(cardNumber);
+        credit.setAmount(amount);
+        credit.setInterestRate(InterestRate);
+        credit.setTermMonths(TermMonths);
+        credit.setMonthlyPayment(monthlyPayment);
+        credit.setStatus("Відкритий");
+
+        boolean status = bankCardRepository.credit(cardNumber, amount, credit);
+
+        System.out.println(credit);
+        if(status){
+            model.addAttribute("message", "Кредит оформлено! Щомісячний платіж: " + monthlyPayment + " грн");
+            return "success";
+        } else {
+            model.addAttribute("messageError", "Помилка! Кредит не оформлено");
+            return "failed";
+        }
+
+    }
+
 }

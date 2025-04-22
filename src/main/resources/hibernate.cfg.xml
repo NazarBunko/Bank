@@ -14,5 +14,6 @@
         <property name="show_sql">true</property>
 
         <mapping class="com.spring.bank.models.PaymentTransaction"/>
+        <mapping class="com.spring.bank.models.Credit"/>
     </session-factory>
 </hibernate-configuration>
