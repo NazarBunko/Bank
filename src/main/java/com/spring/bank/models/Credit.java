@@ -15,8 +15,12 @@ public class Credit {
     private Integer id;
 
     @NotNull
-    @Column(name = "ClientID", nullable = false)
-    private Integer client;
+    @JoinColumn(name = "ClientID", nullable = false)
+    private Integer clientId;
+
+    @NotNull
+    @JoinColumn(name = "BankAccountID", nullable = false)
+    private Integer bankAccountId;
 
     @NotNull
     @Column(name = "CardNumber", nullable = false)
@@ -24,7 +28,12 @@ public class Credit {
 
     @NotNull
     @Positive
-    @Column(name = "Amount", nullable = false)
+    @Column(name = "PrincipalAmount")
+    private Double principalAmount;
+
+    @NotNull
+    @PositiveOrZero
+    @Column(name = "Amount")
     private Double amount;
 
     @NotNull
@@ -54,12 +63,20 @@ public class Credit {
         this.id = id;
     }
 
-    public Integer getClient() {
-        return client;
+    public Integer getClientId() {
+        return clientId;
     }
 
-    public void setClient(Integer client) {
-        this.client = client;
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
+    }
+
+    public Integer getBankAccountId() {
+        return bankAccountId;
+    }
+
+    public void setBankAccountId(Integer bankAccountId) {
+        this.bankAccountId = bankAccountId;
     }
 
     public String getCardNumber() {
@@ -68,6 +85,14 @@ public class Credit {
 
     public void setCardNumber(String cardNumber) {
         this.cardNumber = cardNumber;
+    }
+
+    public Double getPrincipalAmount() {
+        return principalAmount;
+    }
+
+    public void setPrincipalAmount(Double principalAmount) {
+        this.principalAmount = principalAmount;
     }
 
     public Double getAmount() {
@@ -114,7 +139,8 @@ public class Credit {
     public String toString() {
         return "Credit{" +
                 "id=" + id +
-                ", client=" + client +
+                ", client=" + clientId +
+                ", account=" + bankAccountId +
                 ", amount=" + amount +
                 ", interestRate=" + interestRate +
                 ", termMonths=" + termMonths +

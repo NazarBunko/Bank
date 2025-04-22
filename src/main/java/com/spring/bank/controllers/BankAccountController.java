@@ -3,9 +3,13 @@ package com.spring.bank.controllers;
 import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.BankCard;
 import com.spring.bank.models.Credit;
+import com.spring.bank.models.PaymentTransaction;
 import com.spring.bank.repositories.BankAccountRepository;
 import com.spring.bank.repositories.BankCardRepository;
 import com.spring.bank.repositories.ClientRepository;
+import com.spring.bank.repositories.CreditRepository;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +29,7 @@ public class BankAccountController {
     private ClientRepository clientRepository;
     private BankAccountRepository bankAccountRepository;
     private BankCardRepository bankCardRepository;
+    private CreditRepository creditRepository;
 
     private BankAccount bankAccount;
 
@@ -32,6 +37,7 @@ public class BankAccountController {
         clientRepository = new ClientRepository();
         bankAccountRepository = new BankAccountRepository();
         bankCardRepository = new BankCardRepository();
+        creditRepository = new CreditRepository();
     }
 
     @GetMapping("/dashboard")
@@ -121,40 +127,49 @@ public class BankAccountController {
                             @RequestParam double InterestRate,
                             @RequestParam int TermMonths,
                             Model model) {
+        double monthlyPayment = bankCardRepository.credit(cardNumber, amount, InterestRate, TermMonths, bankAccount);
 
-        Integer clientId = bankAccount.getClientId();
-
-        if (clientId == null) {
-            model.addAttribute("messageError", "Картку не знайдено");
-            return "failed";
-        }
-
-        double monthlyRate   = InterestRate / 100.0 / 12.0;
-        double monthlyPayment = (amount * monthlyRate) /
-                (1.0 - Math.pow(1.0 + monthlyRate, -TermMonths));
-
-        monthlyPayment = Math.round(monthlyPayment * 100.0) / 100.0;
-
-        Credit credit = new Credit();
-        credit.setClient(clientId);
-        credit.setCardNumber(cardNumber);
-        credit.setAmount(amount);
-        credit.setInterestRate(InterestRate);
-        credit.setTermMonths(TermMonths);
-        credit.setMonthlyPayment(monthlyPayment);
-        credit.setStatus("Відкритий");
-
-        boolean status = bankCardRepository.credit(cardNumber, amount, credit);
-
-        System.out.println(credit);
-        if(status){
+        if(monthlyPayment > 0){
             model.addAttribute("message", "Кредит оформлено! Щомісячний платіж: " + monthlyPayment + " грн");
             return "success";
         } else {
             model.addAttribute("messageError", "Помилка! Кредит не оформлено");
             return "failed";
         }
-
     }
 
+    @GetMapping("/repayCredit")
+    public String showRepayCreditForm(Model model) {
+        model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
+        model.addAttribute("credits", creditRepository.findAllByClientId(bankAccount.getClientId()));
+        return "repayCredit";
+    }
+
+    @PostMapping("/repayCredit")
+    public String repayCredit(@RequestParam String cardNumber,
+                              @RequestParam int creditId,
+                              @RequestParam double paymentAmount,
+                              Model model) {
+
+        Integer clientId = bankAccount.getClientId();
+        if (clientId == null) {
+            model.addAttribute("messageError", "Картку не знайдено");
+            return "failed";
+        }
+
+        if(bankCardRepository.findCardByNumber(cardNumber).getBalance() < paymentAmount){
+            model.addAttribute("messageError", "Виникла помилка при погашені кредиту!");
+            return "failed";
+        }
+        boolean statusCredit = creditRepository.repayCredit(creditId, paymentAmount);
+        boolean statusCard = bankCardRepository.repayCredit(paymentAmount, cardNumber);
+
+        if(statusCredit && statusCard){
+            model.addAttribute("message", "Погашення кредиту успішне!");
+            return "success";
+        } else {
+            model.addAttribute("messageError", "Виникла помилка при погашені кредиту!");
+            return "failed";
+        }
+    }
 }

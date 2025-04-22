@@ -1,5 +1,6 @@
 package com.spring.bank.repositories;
 
+import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.BankCard;
 import com.spring.bank.models.Credit;
 import com.spring.bank.models.PaymentTransaction;
@@ -18,7 +19,6 @@ import java.util.List;
 public class BankCardRepository {
 
     private final SessionFactory factory = MainRepository.getFactory(BankCard.class);
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public List<BankCard> findByBankAccountId(Integer bankAccountId) {
         try (Session session = factory.openSession()) {
@@ -135,14 +135,39 @@ public class BankCardRepository {
         }
     }
 
-    public boolean credit(String toCardNumber, Double amount, Credit credit) {
+    public double credit(String cardNumber, Double amount, double InterestRate, Integer TermMonths, BankAccount bankAccount) {
         Transaction transaction;
 
+        Integer clientId = bankAccount.getClientId();
+        if (clientId == null) {
+            return 0;
+        }
+
+        double monthlyRate = InterestRate / 100.0 / 12.0;
+        double monthlyPayment = (amount * monthlyRate) /
+                (1.0 - Math.pow(1.0 + monthlyRate, -TermMonths));
+
+        monthlyPayment = Math.round(monthlyPayment * 100.0) / 100.0;
+        double totalPayment = monthlyPayment * TermMonths;
+        totalPayment = Math.round(totalPayment * 100.0) / 100.0;
+
+
+        Credit credit = new Credit();
+        credit.setClientId(clientId);
+        credit.setBankAccountId(bankAccount.getId());
+        credit.setCardNumber(cardNumber);
+        credit.setPrincipalAmount(totalPayment);
+        credit.setAmount(totalPayment);
+        credit.setInterestRate(InterestRate);
+        credit.setTermMonths(TermMonths);
+        credit.setMonthlyPayment(monthlyPayment);
+        credit.setStatus("Відкритий");
+
         try (Session session = factory.openSession()) {
-            BankCard receiverCard = findCardByNumber(toCardNumber);
+            BankCard receiverCard = findCardByNumber(cardNumber);
             if (receiverCard == null) {
                 System.out.println("Картка не знайдена");
-                return false;
+                return 0;
             }
             if(credit == null) {
                 System.out.println("Кредит не знайдений");
@@ -152,11 +177,27 @@ public class BankCardRepository {
             session.update(receiverCard);
             session.save(credit);
             transaction.commit();
-            boolean newTransaction = createTransfer("bank", toCardNumber, amount, "credit");
+            boolean newTransaction = createTransfer("bank", cardNumber, amount, "credit");
             if (newTransaction) {
-                return true;
+                return monthlyPayment;
             }
-            return false;
+            return 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public boolean repayCredit(double amount, String cardNumber) {
+        Transaction transaction;
+
+        try (Session session = factory.openSession()) {
+            BankCard card = findCardByNumber(cardNumber);
+            transaction = session.beginTransaction();
+            card.setBalance(card.getBalance() - amount);
+            session.update(card);
+            transaction.commit();
+            return true;
         } catch (Exception e) {
             e.printStackTrace();
             return false;
