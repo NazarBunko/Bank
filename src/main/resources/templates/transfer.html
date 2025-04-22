@@ -5,103 +5,170 @@
     <title>Переказ на картку</title>
     <style>
         body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg, #e3f2fd, #90caf9);
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e6d4f6, #fbd5d5);
             display: flex;
             justify-content: center;
             align-items: center;
+            height: 100vh;
+            margin: 0;
         }
 
         .form-container {
-            background-color: white;
-            padding: 30px;
+            background: #fff;
+            padding: 30px 30px 20px;
             border-radius: 10px;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-            width: 320px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 520px;
             position: relative;
         }
 
         .form-container h2 {
-            margin-top: 0;
             text-align: center;
-            color: #1976d2;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 22px;
         }
 
-        label {
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
             display: block;
-            margin: 12px 0 6px;
+            margin-bottom: 5px;
             font-weight: bold;
+            color: #555;
+            font-size: 14px;
         }
 
-        select, input[type="text"], input[type="number"], textarea {
-            width: 100%;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        button {
-            margin-top: 20px;
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
             width: 100%;
             padding: 10px;
-            background-color: #1976d2;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #00796b;
+            outline: none;
+        }
+
+        .form-group button {
+            width: 100%;
+            padding: 15px 30px;
+            background-color: #ff5f5f;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 8px;
             font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        button:hover {
-            background-color: #1565c0;
+        .form-group button:hover {
+            background-color: #e84848;
         }
 
-        .close-link {
+        .balance-display {
+            font-size: 14px;
+            color: #555;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        .close-button {
             position: absolute;
             top: 10px;
-            right: 15px;
-            text-decoration: none;
+            right: 10px;
+            background: transparent;
+            border: none;
             font-size: 20px;
             color: #333;
-            font-weight: bold;
             cursor: pointer;
+            text-decoration: none;
         }
 
-        .close-link:hover {
+        .close-button:hover {
             color: #e74c3c;
         }
+
+        .form-group input.invalid {
+            border-color: #e74c3c;
+        }
+
+        .error-message, .success-message {
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            background-color: #ffebee;
+            color: #e53935;
+        }
+
+        .success-message {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        /* Стиль для текстового поля опису */
+        .form-group textarea {
+            height: 100px; /* Регулюємо висоту для більш компактного вигляду */
+            resize: vertical; /* Дозволяємо змінювати розмір по вертикалі */
+        }
+
     </style>
 </head>
 <body>
 <div class="form-container">
-    <a href="/dashboard" class="close-link" aria-label="Закрити форму">&#10005;</a>
+    <a href="/dashboard" class="close-button" aria-label="Закрити">&#10005;</a>
     <h2>Переказ на іншу картку</h2>
+
+    <div th:if="${error}" class="error-message" th:text="${error}"></div>
+    <div th:if="${success}" class="success-message" th:text="${success}"></div>
+
     <form th:action="@{/transfer}" method="post">
-        <label for="fromCard">Виберіть вашу картку</label>
-        <select id="fromCard" name="fromCard" onchange="updateBalance()">
-            <option th:each="card : ${cards}"
-                    th:value="${card.cardNumber}"
-                    th:text="'Картка **** ' + ${card.getLastFourDigits()} + ' (баланс: ' + ${card.balance} + ' грн)'">
-            </option>
-        </select>
+        <div class="form-group">
+            <label for="fromCard">Виберіть вашу картку</label>
+            <select id="fromCard" name="fromCard" onchange="updateBalance()">
+                <option value="">-- Оберіть картку --</option>
+                <option th:each="card : ${cards}" th:value="${card.cardNumber}"
+                        th:text="'Картка **** ' + ${card.getLastFourDigits()} + ' (баланс: ' + ${card.balance} + ' грн)'">
+                </option>
+            </select>
+        </div>
 
-        <label for="toCard">Номер картки одержувача</label>
-        <input type="text" id="toCard" name="toCard" maxlength="16" pattern="\d{16}" required placeholder="Наприклад: 1234567812345678">
+        <div class="balance-display" id="balanceDisplay"></div>
 
-        <label for="amount">Сума переказу</label>
-        <input type="number" id="amount" name="amount" min="1" step="0.01" required>
+        <div class="form-group">
+            <label for="toCard">Номер картки одержувача</label>
+            <input type="text" id="toCard" name="toCard" maxlength="16" pattern="\d{16}" required placeholder="1234567812345678">
+        </div>
 
-        <label for="description">Опис (необов'язково)</label>
-        <textarea id="description" name="description" rows="3" placeholder="Наприклад: Подарунок або повернення боргу"></textarea>
+        <div class="form-group">
+            <label for="amount">Сума переказу</label>
+            <input type="number" id="amount" name="amount" min="1" step="0.01" required placeholder="0.00">
+        </div>
 
-        <button type="submit">Переказати</button>
+        <div class="form-group">
+            <label for="description">Опис (необов'язково)</label>
+            <textarea id="description" name="description" rows="3" placeholder="Подарунок, борг тощо"></textarea>
+        </div>
+
+        <div class="form-group">
+            <button type="submit">Переказати</button>
+        </div>
     </form>
 </div>
 </body>

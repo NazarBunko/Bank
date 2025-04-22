@@ -11,10 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import javax.smartcardio.Card;
 import java.security.Principal;
-import java.util.List;
 
 @Controller
 public class BankAccountController {
@@ -92,5 +89,10 @@ public class BankAccountController {
     public String showMobileForm(Model model) {
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
         return "mobile";
+    }
+
+    @GetMapping("/payments")
+    public String showPaymentsForm() {
+        return "payments";
     }
 }
