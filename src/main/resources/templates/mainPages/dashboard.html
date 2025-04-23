@@ -27,22 +27,6 @@
       position: relative;
     }
 
-    /* Стиль для кнопки хрестика */
-    .close-button {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: transparent;
-      border: none;
-      font-size: 20px;
-      color: #333;
-      cursor: pointer;
-    }
-
-    .close-button:hover {
-      color: #e74c3c;
-    }
-
     .section {
       margin-bottom: 40px;
     }
@@ -216,11 +200,12 @@
     }
 
     .sidebar a {
+      width: 100%;  /* Розтягуємо посилання на всю ширину меню */
       padding: 15px;
       text-decoration: none;
       font-size: 18px;
       color: white;
-      display: block;
+      display: block;  /* Робимо блок, щоб ефект hover був на всю ширину */
       transition: 0.3s;
     }
 
@@ -231,10 +216,18 @@
     .sidebar .closebtn {
       position: absolute;
       top: 20px;
-      right: 25px;
+      margin-left: 370px;  /* Відступ з правого боку */
       font-size: 36px;
       color: white;
       cursor: pointer;
+      background: transparent; /* Без фону */
+      border: none;            /* Без меж */
+      outline: none;           /* Без контуру */
+    }
+
+    .sidebar .closebtn:hover {
+      background: transparent; /* При hover немає змін */
+      color: white;             /* Колір залишається білим */
     }
 
     /* Три полоски */
@@ -247,10 +240,62 @@
       cursor: pointer;
     }
 
+    .menu-btn:hover {
+      color: #ff5f5f;
+    }
+
     /* Відкриття меню */
     .sidebar.open {
       left: 0;
     }
+
+    .logout-icon {
+      font-size: 30px;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      color: #667eea;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+
+    .logout-icon:hover {
+      color: #ff5f5f;
+    }
+
+    .submenu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+      opacity: 0;
+      width: 100%;
+    }
+
+    .submenu.show {
+      max-height: 1000px;
+      opacity: 1;
+    }
+
+    .submenu a {
+      padding: 10px 15px;
+      text-decoration: none;
+      font-size: 16px;
+      color: white;
+      display: block;
+      transition: 0.3s;
+      width: 100%;
+      background-color: rgba(0, 0, 0, 0);
+      box-sizing: border-box;
+    }
+
+    .submenu a:hover {
+      background-color: #444;
+    }
+
+    .submenu i {
+      margin-right: 10px;
+    }
+
   </style>
 </head>
 <body>
@@ -260,6 +305,20 @@
 <!-- Бокове меню -->
 <div id="sidebar" class="sidebar">
   <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+
+  <a href="javascript:void(0)" onclick="toggleSubmenu()">Налаштування безпеки</a>
+  <div id="securitySubmenu" class="submenu">
+    <a href="/edit-name"><i class="bi bi-person"></i> Змінити ім'я</a>
+    <a href="/change-password"><i class="bi bi-lock"></i> Змінити пароль</a>
+    <a href="/change-login"><i class="bi bi-person-circle"></i> Змінити логін</a>
+    <a href="/change-address"><i class="bi bi-house-door"></i> Змінити адресу</a>
+    <a href="/change-phone"><i class="bi bi-telephone"></i> Змінити телефон</a>
+    <a href="/change-birthdate"><i class="bi bi-calendar"></i> Змінити дату народження</a>
+    <a href="/change-client-type"><i class="bi bi-person-bounding-box"></i> Змінити тип клієнта</a>
+    <a href="/change-passport"><i class="bi bi-card-list"></i> Змінити номер паспорта</a>
+  </div>
+
+
   <a href="/replenish">Поповнення рахунку</a>
   <a href="/transfer">Переказати кошти</a>
   <a href="/mobile">Поповнення мобільного</a>
@@ -268,9 +327,12 @@
   <a href="/repayCredit">Погасити кредит</a>
 </div>
 
+
 <div class="container">
-  <!-- Кнопка хрестик для закриття -->
-  <button class="close-button" aria-label="Закрити форму" onclick="window.location.href='/'">&#10005;</button>
+
+  <div class="logout-container">
+    <i class="bi bi-box-arrow-right logout-icon" onclick="window.location.replace('/logOut')"></i>
+  </div>
 
   <!-- Клієнтська інформація -->
   <div class="section">
@@ -278,6 +340,9 @@
     <div class="info-grid">
       <div class="info-item"><strong>Ім'я:</strong> <span th:text="${client.getFullName()}">Ім'я</span></div>
       <div class="info-item"><strong>Телефон:</strong> <span th:text="${client.getPhone()}">Телефон</span></div>
+      <div class="info-item"><strong>Адреса:</strong> <span th:text="${client.getAddress()}">Адреса</span></div>
+      <div class="info-item"><strong>Номер паспорта:</strong> <span th:text="${client.getPassportNumber()}">Номер паспорта</span></div>
+      <div class="info-item"><strong>Тип клієнта:</strong> <span th:text="${client.getClientType()}">Тип клієнта</span></div>
     </div>
   </div>
 
@@ -319,6 +384,12 @@
 </div>
 
 <script>
+
+  function toggleSubmenu() {
+    const submenu = document.getElementById("securitySubmenu");
+    submenu.classList.toggle("show");
+  }
+
   function toggleMenu() {
     const sidebar = document.getElementById('sidebar');
     sidebar.classList.toggle('open');
@@ -338,26 +409,26 @@
     } else {
       addCard.style.display = 'none';
     }
-    if (cards[index]) {
-      cards[index].classList.add('active');
-    }
+    cards[index].classList.add('active');
   }
 
-  prevButton.addEventListener('click', function() {
+  function moveToPrevCard() {
     if (currentIndex > 0) {
       currentIndex--;
       showCard(currentIndex);
     }
-  });
+  }
 
-  nextButton.addEventListener('click', function() {
+  function moveToNextCard() {
     if (currentIndex < totalCards) {
       currentIndex++;
       showCard(currentIndex);
     }
-  });
+  }
 
-  // Початковий показ
+  prevButton.addEventListener('click', moveToPrevCard);
+  nextButton.addEventListener('click', moveToNextCard);
+
   showCard(currentIndex);
 </script>
 </body>

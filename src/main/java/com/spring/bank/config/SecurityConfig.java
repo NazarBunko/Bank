@@ -52,11 +52,6 @@ public class SecurityConfig {
                         .failureUrl("/logIn")
                         .permitAll()
                 )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/logIn?logout")
-                        .permitAll()
-                )
                 .userDetailsService(userDetailsService)
                 .build();
     }

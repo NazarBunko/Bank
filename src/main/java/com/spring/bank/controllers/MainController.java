@@ -3,7 +3,6 @@ package com.spring.bank.controllers;
 import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.Client;
 import com.spring.bank.repositories.BankAccountRepository;
-import com.spring.bank.repositories.BankCardRepository;
 import com.spring.bank.repositories.ClientRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,27 +13,25 @@ import org.springframework.web.bind.annotation.*;
 public class MainController {
     private ClientRepository clientRepository;
     private BankAccountRepository bankAccountRepository;
-    private BankCardRepository bankCardRepository;
 
     public MainController() {
         clientRepository = new ClientRepository();
         bankAccountRepository = new BankAccountRepository();
-        bankCardRepository = new BankCardRepository();
     }
 
     @GetMapping("/")
     public String welcome() {
-        return "welcome";
+        return "/mainPages/welcome";
     }
 
     @GetMapping("/logIn")
     public String logIn() {
-        return "loginForm";
+        return "/mainPages/loginForm";
     }
 
     @GetMapping("/signIn")
     public String signIn() {
-        return "registrationForm";
+        return "/mainPages/registrationForm";
     }
 
     @PostMapping("/signIn")
@@ -62,12 +59,62 @@ public class MainController {
     @GetMapping("/success")
     public String successfully(Model model) {
         model.addAttribute("message", "Operation successful");
-        return "success";
+        return "/messages/success";
     }
 
     @GetMapping("/failed")
     public String failed(Model model) {
         model.addAttribute("messageError", "Operation failed");
-        return "failed";
+        return "/messages/failed";
+    }
+
+    @GetMapping("/payments")
+    public String showPaymentsForm() {
+        return "/sidebar/payments";
+    }
+
+    @GetMapping("/credit-terms")
+    public String showCreditTermsForm() {
+        return "/sidebar/credit/creditTerms";
+    }
+
+    @GetMapping("/edit-name")
+    public String showEditNameForm() {
+        return "/settings/editName";
+    }
+
+    @GetMapping("/change-password")
+    public String showEditPasswordForm() {
+        return "/settings/editPassword";
+    }
+
+    @GetMapping("/change-login")
+    public String showEditLoginForm() {
+        return "/settings/editLogin";
+    }
+
+    @GetMapping("/change-address")
+    public String showEditAddressForm() {
+        return "/settings/editAddress";
+    }
+
+    @GetMapping("/change-phone")
+    public String showEditPhoneForm() {
+        return "/settings/editPhone";
+    }
+
+    @GetMapping("/change-birthdate")
+    public String showEditBirthdateForm() {
+        return "/settings/editBirthDate";
+    }
+
+    @GetMapping("/change-client-type")
+    public String showEditClientTypeForm() {
+        return "/settings/editClientType";
+    }
+
+    @GetMapping("/change-passport")
+    public String showEditPassportForm() {
+        return "/settings/editPassport";
     }
 }

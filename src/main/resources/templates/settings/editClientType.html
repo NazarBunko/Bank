@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <title>Зміна типу клієнта</title>
+  <link rel="stylesheet" href="/settingStyle.css">
+</head>
+<body>
+<div class="form-box">
+  <a class="close" href="/dashboard">&times;</a>
+  <h2>Зміна типу клієнта</h2>
+  <form action="/updateClientType" method="post">
+    <select name="clientType" required>
+      <option value="" disabled selected>Оберіть тип клієнта</option>
+      <option value="Фізична особа">Фізична особа</option>
+      <option value="Юридична особа">Юридична особа</option>
+    </select>
+    <input type="password" name="password" placeholder="Пароль для підтвердження" required>
+    <button type="submit">Зберегти</button>
+  </form>
+</div>
+</body>
+</html>

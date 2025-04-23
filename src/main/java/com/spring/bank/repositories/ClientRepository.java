@@ -5,8 +5,12 @@ import com.spring.bank.models.Client;
 import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -14,6 +18,7 @@ import java.util.List;
 public class ClientRepository {
 
     private final SessionFactory factory = MainRepository.getFactory(Client.class);
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     public List<Client> getAllClients(){
         Session session = null;
@@ -85,6 +90,166 @@ public class ClientRepository {
             return null;
         } finally {
             if (session != null && session.isOpen()) session.close();
+        }
+    }
+
+    public boolean updateClientName(Client client, String password, String newName, BankAccount bankAccount) {
+
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            client.setFullName(newName);
+            session.update(client);
+
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
+
+    public boolean updateClientAddress(Client client, String password, String address, BankAccount bankAccount) {
+
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            client.setAddress(address);
+            session.update(client);
+
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
+
+    public boolean updateClientBirthDate(Client client, String password, LocalDate date, BankAccount bankAccount) {
+
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            client.setBirthDate(date);
+            session.update(client);
+
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
+
+    public boolean updateClientType(Client client, String password, String type, BankAccount bankAccount) {
+
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            client.setClientType(type);
+            session.update(client);
+
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
+
+    public boolean updateClientPassport(Client client, String password, String passport, BankAccount bankAccount) {
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Client existingClient = null;
+        try (Session session = factory.getCurrentSession()) {
+            session.beginTransaction();
+
+            existingClient = session.createQuery("FROM Client WHERE passportNumber = :passport", Client.class)
+                    .setParameter("passport", passport)
+                    .uniqueResult();
+
+            if (existingClient != null) {
+                session.getTransaction().commit();
+                return false;
+            }
+
+            client.setPassportNumber(passport);
+            session.update(client);
+
+            session.getTransaction().commit();
+            return true;
+
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateClientPhone(Client client, String password, String phone, BankAccount bankAccount) {
+
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            client.setPhone(phone);
+            session.update(client);
+
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
         }
     }
 

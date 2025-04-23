@@ -1,9 +1,6 @@
 package com.spring.bank.controllers;
 
-import com.spring.bank.models.BankAccount;
-import com.spring.bank.repositories.BankAccountRepository;
 import com.spring.bank.repositories.BankCardRepository;
-import com.spring.bank.repositories.ClientRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,10 +25,10 @@ public class BankCardController {
         boolean success = bankCardRepository.replenishCard(card, amount, method);
         if (success) {
             model.addAttribute("message", "Поповнення успішне!");
-            return "success";
+            return "/messages/success";
         } else {
             model.addAttribute("messageError", "Помилка під час поповнення. Спробуйте ще раз.");
-            return "failed";
+            return "/messages/failed";
         }
     }
 
@@ -46,10 +43,10 @@ public class BankCardController {
         boolean success = bankCardRepository.transfer(fromCard, toCard, amount, description);
         if (success) {
             model.addAttribute("message", "Переказ успішно виконано!");
-            return "success";
+            return "/messages/success";
         } else {
             model.addAttribute("messageError", "Помилка під час переказу. Перевірте дані та спробуйте ще раз.");
-            return "failed";
+            return "/messages/failed";
         }
     }
 
@@ -63,10 +60,10 @@ public class BankCardController {
         boolean success = bankCardRepository.mobile(fromCard, phone, amount);
         if (success) {
             model.addAttribute("message", "Переказ успішно виконано!");
-            return "success";
+            return "/messages/success";
         } else {
             model.addAttribute("messageError", "Помилка під час переказу. Перевірте дані та спробуйте ще раз.");
-            return "failed";
+            return "/messages/failed";
         }
     }
 }

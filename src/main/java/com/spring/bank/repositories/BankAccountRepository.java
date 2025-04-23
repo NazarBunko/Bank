@@ -94,4 +94,53 @@ public class BankAccountRepository {
         }
     }
 
+    public boolean updateAccountPassword(String password, String newPassword, BankAccount bankAccount) {
+
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            String encodedNewPassword = passwordEncoder.encode(newPassword);
+            bankAccount.setPassword(encodedNewPassword);
+
+            session.update(bankAccount);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error '" + e.getMessage() + "' in method updateAccountPassword()");
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
+
+    public boolean updateAccountLogin(String password, String login, BankAccount bankAccount) {
+        if (!passwordEncoder.matches(password, bankAccount.getPassword())) {
+            return false;
+        }
+
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+            bankAccount.setLogin(login);
+            session.update(bankAccount);
+            session.getTransaction().commit();
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error " + e.getMessage());
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
 }

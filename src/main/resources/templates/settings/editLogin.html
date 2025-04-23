@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Зміна логіну</title>
+    <link rel="stylesheet" href="/settingStyle.css">
+</head>
+<body>
+<div class="form-box">
+    <a class="close" href="/dashboard">&times;</a>
+    <h2>Зміна логіну</h2>
+    <form action="/updateLogin" method="post">
+        <input type="text" name="login" placeholder="Новий логін" required>
+        <input type="password" name="password" placeholder="Пароль для підтвердження" required>
+        <button type="submit">Зберегти</button>
+    </form>
+</div>
+</body>
+</html>
