@@ -34,7 +34,7 @@ public class PaymentTransaction {
 
     @NotNull
     @Column(name = "TransactionDate", nullable = false)
-    private java.time.LocalDate TransactionDate;
+    private LocalDateTime transactionDate;
 
     public PaymentTransaction() {}
 
@@ -43,15 +43,15 @@ public class PaymentTransaction {
         this.receiver = receiver;
         this.amount = amount;
         this.note = note;
-        TransactionDate = java.time.LocalDate.now();
+        this.transactionDate = LocalDateTime.now();
     }
 
-    public LocalDate getTransactionDate() {
-        return TransactionDate;
+    public LocalDateTime getTransactionDate() {
+        return transactionDate;
     }
 
-    public void setTransactionDate(LocalDate transactionDate) {
-        TransactionDate = transactionDate;
+    public void setTransactionDate(LocalDateTime transactionDate) {
+        this.transactionDate = transactionDate;
     }
 
     public String getNote() {
@@ -94,7 +94,7 @@ public class PaymentTransaction {
                 ", receiver='" + receiver + '\'' +
                 ", amount='" + amount + '\'' +
                 ", note='" + note + '\'' +
-                ", TransactionDate=" + TransactionDate +
+                ", TransactionDate=" + transactionDate +
                 '}';
     }
 }

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class BankCardController {
 
     private BankCardRepository bankCardRepository;
+    private final String successMessage = "messages/success";
+    private final String failedMessage = "messages/failed";
 
 
     public BankCardController() {
@@ -25,10 +27,10 @@ public class BankCardController {
         boolean success = bankCardRepository.replenishCard(card, amount, method);
         if (success) {
             model.addAttribute("message", "Поповнення успішне!");
-            return "/messages/success";
+            return successMessage;
         } else {
             model.addAttribute("messageError", "Помилка під час поповнення. Спробуйте ще раз.");
-            return "/messages/failed";
+            return failedMessage;
         }
     }
 
@@ -43,10 +45,10 @@ public class BankCardController {
         boolean success = bankCardRepository.transfer(fromCard, toCard, amount, description);
         if (success) {
             model.addAttribute("message", "Переказ успішно виконано!");
-            return "/messages/success";
+            return successMessage;
         } else {
             model.addAttribute("messageError", "Помилка під час переказу. Перевірте дані та спробуйте ще раз.");
-            return "/messages/failed";
+            return failedMessage;
         }
     }
 
@@ -60,10 +62,10 @@ public class BankCardController {
         boolean success = bankCardRepository.mobile(fromCard, phone, amount);
         if (success) {
             model.addAttribute("message", "Переказ успішно виконано!");
-            return "/messages/success";
+            return successMessage;
         } else {
             model.addAttribute("messageError", "Помилка під час переказу. Перевірте дані та спробуйте ще раз.");
-            return "/messages/failed";
+            return failedMessage;
         }
     }
 }

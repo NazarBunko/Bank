@@ -143,4 +143,37 @@ public class BankAccountRepository {
             }
         }
     }
+
+    public boolean updatePassword(String login, String newPassword) {
+        Session session = null;
+        try {
+            session = factory.getCurrentSession();
+            session.beginTransaction();
+
+            String query = "FROM BankAccount WHERE login = :login";
+            BankAccount bankAccount = (BankAccount) session.createQuery(query)
+                    .setParameter("login", login)
+                    .uniqueResult();
+
+            if (bankAccount == null) {
+                return false;
+            }
+
+            String encodedNewPassword = passwordEncoder.encode(newPassword);
+            bankAccount.setPassword(encodedNewPassword);
+
+            session.update(bankAccount);
+            session.getTransaction().commit();
+
+            return true;
+        } catch (Exception e) {
+            System.out.println("Error '" + e.getMessage() + "' in method updatePassword()");
+            return false;
+        } finally {
+            if (session != null && session.isOpen()) {
+                session.close();
+            }
+        }
+    }
+
 }

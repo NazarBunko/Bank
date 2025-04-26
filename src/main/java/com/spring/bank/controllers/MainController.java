@@ -21,17 +21,22 @@ public class MainController {
 
     @GetMapping("/")
     public String welcome() {
-        return "/mainPages/welcome";
+        return "mainPages/welcome";
     }
 
     @GetMapping("/logIn")
     public String logIn() {
-        return "/mainPages/loginForm";
+        return "mainPages/loginForm";
     }
 
     @GetMapping("/signIn")
     public String signIn() {
-        return "/mainPages/registrationForm";
+        return "mainPages/registrationForm";
+    }
+
+    @GetMapping("/forgotPassword")
+    public String forgotPassword() {
+        return "mainPages/forgotPassword";
     }
 
     @PostMapping("/signIn")
@@ -59,62 +64,62 @@ public class MainController {
     @GetMapping("/success")
     public String successfully(Model model) {
         model.addAttribute("message", "Operation successful");
-        return "/messages/success";
+        return "messages/success";
     }
 
     @GetMapping("/failed")
     public String failed(Model model) {
         model.addAttribute("messageError", "Operation failed");
-        return "/messages/failed";
+        return "messages/failed";
     }
 
     @GetMapping("/payments")
     public String showPaymentsForm() {
-        return "/sidebar/payments";
+        return "sidebar/payments";
     }
 
     @GetMapping("/credit-terms")
     public String showCreditTermsForm() {
-        return "/sidebar/credit/creditTerms";
+        return "sidebar/credit/creditTerms";
     }
 
     @GetMapping("/edit-name")
     public String showEditNameForm() {
-        return "/settings/editName";
+        return "settings/editName";
     }
 
     @GetMapping("/change-password")
     public String showEditPasswordForm() {
-        return "/settings/editPassword";
+        return "settings/editPassword";
     }
 
     @GetMapping("/change-login")
     public String showEditLoginForm() {
-        return "/settings/editLogin";
+        return "settings/editLogin";
     }
 
     @GetMapping("/change-address")
     public String showEditAddressForm() {
-        return "/settings/editAddress";
+        return "settings/editAddress";
     }
 
     @GetMapping("/change-phone")
     public String showEditPhoneForm() {
-        return "/settings/editPhone";
+        return "settings/editPhone";
     }
 
     @GetMapping("/change-birthdate")
     public String showEditBirthdateForm() {
-        return "/settings/editBirthDate";
+        return "settings/editBirthDate";
     }
 
     @GetMapping("/change-client-type")
     public String showEditClientTypeForm() {
-        return "/settings/editClientType";
+        return "settings/editClientType";
     }
 
     @GetMapping("/change-passport")
     public String showEditPassportForm() {
-        return "/settings/editPassport";
+        return "settings/editPassport";
     }
 }

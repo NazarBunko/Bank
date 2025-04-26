@@ -1,10 +1,11 @@
 package com.spring.bank.controllers;
 
 import com.spring.bank.models.*;
-import com.spring.bank.repositories.BankAccountRepository;
-import com.spring.bank.repositories.BankCardRepository;
-import com.spring.bank.repositories.ClientRepository;
-import com.spring.bank.repositories.CreditRepository;
+import com.spring.bank.repositories.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +26,10 @@ public class BankAccountController {
     private BankAccountRepository bankAccountRepository;
     private BankCardRepository bankCardRepository;
     private CreditRepository creditRepository;
+    private TransactionRepository transactionRepository;
+
+    private final String successMessage = "messages/success";
+    private final String failedMessage = "messages/failed";
 
     private BankAccount bankAccount;
 
@@ -33,6 +38,7 @@ public class BankAccountController {
         bankAccountRepository = new BankAccountRepository();
         bankCardRepository = new BankCardRepository();
         creditRepository = new CreditRepository();
+        transactionRepository = new TransactionRepository();
     }
 
     @GetMapping("/dashboard")
@@ -46,17 +52,31 @@ public class BankAccountController {
             account = bankAccount;
         }
 
+        List<BankCard> cards = bankCardRepository.findByBankAccountId(account.getId());
         model.addAttribute("account", account);
         model.addAttribute("client", clientRepository.getClientById(account.getClientId()));
-        model.addAttribute("cards", bankCardRepository.findByBankAccountId(account.getId()));
-        return "/mainPages/dashboard";
+        model.addAttribute("cards", cards);
+        model.addAttribute("transactions", transactionRepository.findTransactionsByCards(cards));
+        return "mainPages/dashboard";
+    }
+
+    @PostMapping("/forgotPassword")
+    public String forgotPassword(@RequestParam String username, @RequestParam String password) {
+        try{
+            bankAccountRepository.updatePassword(username, password);
+            bankAccount = bankAccountRepository.findByLogin(username);
+            return "redirect:/success";
+        }
+        catch(Exception e){
+            return "redirect:/failed";
+        }
     }
 
     @GetMapping("/addCard")
     public String addCard(Model model) {
         BankCard card = new BankCard(bankAccount.getId());
         model.addAttribute("bankCard", card);
-        return "/sidebar/newCard";
+        return "sidebar/newCard";
     }
 
     @PostMapping("/addCard")
@@ -73,29 +93,29 @@ public class BankAccountController {
             BankAccount account = bankAccountRepository.findByLogin(principal.getName());
             model.addAttribute("message", "Операція успішна!");
             model.addAttribute("account", account);
-            return "/messages/success";
+            return successMessage;
         } catch (Exception e) {
             model.addAttribute("messageError", "Виникла помилка!");
-            return "/messages/failed";
+            return failedMessage;
         }
     }
 
     @GetMapping("/replenish")
     public String showReplenishForm(Model model) {
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
-        return "/sidebar/replenish";
+        return "sidebar/replenish";
     }
 
     @GetMapping("/transfer")
     public String showTransferForm(Model model) {
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
-        return "/sidebar/transfer";
+        return "sidebar/transfer";
     }
 
     @GetMapping("/mobile")
     public String showMobileForm(Model model) {
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
-        return "/sidebar/mobile";
+        return "sidebar/mobile";
     }
 
     @GetMapping("/credit")
@@ -108,14 +128,27 @@ public class BankAccountController {
             }
         }
         model.addAttribute("cards", creditCards);
-        return "/sidebar/credit/credit";
+        return "sidebar/credit/credit";
     }
 
     @GetMapping("/logOut")
-    public String logout() {
+    public String logout(HttpServletRequest request, HttpServletResponse response) {
         bankAccount = null;
+
+        HttpSession session = request.getSession(false);
+        if (session != null) {
+            session.invalidate();
+        }
+
+        SecurityContextHolder.clearContext();
+
+        response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        response.setHeader("Pragma", "no-cache");
+        response.setDateHeader("Expires", 0);
+
         return "redirect:/";
     }
+
 
     @PostMapping("/credit")
     public String newCredit(@RequestParam String cardNumber,
@@ -127,10 +160,10 @@ public class BankAccountController {
 
         if(monthlyPayment > 0){
             model.addAttribute("message", "Кредит оформлено! Щомісячний платіж: " + monthlyPayment + " грн");
-            return "/messages/success";
+            return successMessage;
         } else {
             model.addAttribute("messageError", "Помилка! Кредит не оформлено");
-            return "/messages/failed";
+            return failedMessage;
         }
     }
 
@@ -138,7 +171,7 @@ public class BankAccountController {
     public String showRepayCreditForm(Model model) {
         model.addAttribute("cards", bankCardRepository.findByBankAccountId(bankAccount.getId()));
         model.addAttribute("credits", creditRepository.findAllByClientId(bankAccount.getClientId()));
-        return "/sidebar/credit/repayCredit";
+        return "sidebar/credit/repayCredit";
     }
 
     @PostMapping("/repayCredit")
@@ -150,23 +183,38 @@ public class BankAccountController {
         Integer clientId = bankAccount.getClientId();
         if (clientId == null) {
             model.addAttribute("messageError", "Картку не знайдено");
-            return "/messages/failed";
+            return failedMessage;
         }
 
         if(bankCardRepository.findCardByNumber(cardNumber).getBalance() < paymentAmount){
             model.addAttribute("messageError", "Виникла помилка при погашені кредиту!");
-            return "/messages/failed";
+            return failedMessage;
         }
         boolean statusCredit = creditRepository.repayCredit(creditId, paymentAmount);
         boolean statusCard = bankCardRepository.repayCredit(paymentAmount, cardNumber);
 
         if(statusCredit && statusCard){
             model.addAttribute("message", "Погашення кредиту успішне!");
-            return "/messages/success";
+            return successMessage;
         } else {
             model.addAttribute("messageError", "Виникла помилка при погашені кредиту!");
-            return "/messages/failed";
+            return failedMessage;
         }
+    }
+
+    @GetMapping("/analytics")
+    public String showAnalyticsForm(Model model) {
+        List<BankCard> cards = bankCardRepository.findByBankAccountId(bankAccount.getId());
+        List<Double> expenses = transactionRepository.getDailyExpensesByCards(cards);
+        List<Double> deposits = transactionRepository.getDailyDepositsByCards(cards);
+
+        System.out.println(expenses);
+        System.out.println(deposits);
+
+        model.addAttribute("expenses", expenses);
+        model.addAttribute("deposits", deposits);
+
+        return "sidebar/analytics";
     }
 
     @PostMapping("/updateAddress")
@@ -178,11 +226,11 @@ public class BankAccountController {
 
         if (clientRepository.updateClientAddress(client, password, address, bankAccount)) {
             model.addAttribute("message", "Адресу успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні адреси!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
     @PostMapping("/updateBirthDate")
@@ -194,27 +242,27 @@ public class BankAccountController {
 
         if (clientRepository.updateClientBirthDate(client, password, birthDate, bankAccount)) {
             model.addAttribute("message", "Дату народження успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні дати народження!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
-    @PostMapping("/updateClientsType")
+    @PostMapping("/updateClientType")
     public String updateClientType(@RequestParam String type,
                                 @RequestParam String password,
                                 Model model) {
-
+        System.out.println(bankAccount);
         Client client = clientRepository.getClientById(bankAccount.getClientId());
 
         if (clientRepository.updateClientType(client, password, type, bankAccount)) {
             model.addAttribute("message", "Тип клієнта успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні типу клієнта!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
     @PostMapping("/updateLogin")
@@ -224,11 +272,11 @@ public class BankAccountController {
 
         if (bankAccountRepository.updateAccountLogin(password, login, bankAccount)) {
             model.addAttribute("message", "Логін успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні логіну!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
     @PostMapping("/updatePassport")
@@ -240,11 +288,11 @@ public class BankAccountController {
 
         if (clientRepository.updateClientPassport(client, password, passport, bankAccount)) {
             model.addAttribute("message", "Номер паспорта успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні номера паспорта!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
     @PostMapping("/updatePhone")
@@ -256,11 +304,11 @@ public class BankAccountController {
 
         if (clientRepository.updateClientPhone(client, password, phone, bankAccount)) {
             model.addAttribute("message", "Номер телефона успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні номера телефона!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
     @PostMapping("/updateName")
@@ -272,11 +320,11 @@ public class BankAccountController {
 
         if (clientRepository.updateClientName(client, password, newName, bankAccount)) {
             model.addAttribute("message", "Ім'я успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні імені!");
-        return "/messages/failed";
+        return failedMessage;
     }
 
     @PostMapping("/updatePassword")
@@ -286,10 +334,10 @@ public class BankAccountController {
 
         if (bankAccountRepository.updateAccountPassword(password, newPassword, bankAccount)) {
             model.addAttribute("message", "Пароль успішно змінено!");
-            return "/messages/success";
+            return successMessage;
         }
 
         model.addAttribute("messageError", "Виникла помилка при зміні пароля!");
-        return "/messages/failed";
+        return failedMessage;
     }
 }

@@ -197,7 +197,12 @@ public class BankCardRepository {
             card.setBalance(card.getBalance() - amount);
             session.update(card);
             transaction.commit();
-            return true;
+            boolean newTransaction = createTransfer(cardNumber, "bank", amount, "credit repay");
+            if (newTransaction) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return false;
