@@ -205,8 +205,8 @@ public class BankAccountController {
     @GetMapping("/analytics")
     public String showAnalyticsForm(Model model) {
         List<BankCard> cards = bankCardRepository.findByBankAccountId(bankAccount.getId());
-        List<Double> expenses = transactionRepository.getDailyExpensesByCards(cards);
-        List<Double> deposits = transactionRepository.getDailyDepositsByCards(cards);
+        List<Double> expenses = transactionRepository.getDailyTransactionSumsByCards(cards, true);
+        List<Double> deposits = transactionRepository.getDailyTransactionSumsByCards(cards, false);
 
         System.out.println(expenses);
         System.out.println(deposits);

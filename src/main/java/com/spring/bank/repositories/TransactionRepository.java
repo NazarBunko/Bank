@@ -53,7 +53,7 @@ public class TransactionRepository {
         }
     }
 
-    public List<Double> getDailyExpensesByCards(List<BankCard> cards) {
+    public List<Double> getDailyTransactionSumsByCards(List<BankCard> cards, boolean isExpense) {
         Session session = null;
         try {
             session = factory.getCurrentSession();
@@ -63,85 +63,38 @@ public class TransactionRepository {
                     .map(BankCard::getCardNumber)
                     .collect(Collectors.toList());
 
-            LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
-            LocalDateTime endDateTime = LocalDateTime.now();
+            LocalDate now = LocalDate.now();
+            LocalDate firstDayOfMonth = now.withDayOfMonth(1);
 
-            Query<PaymentTransaction> query = session.createQuery(
-                    "FROM PaymentTransaction t " +
-                            "WHERE (t.sender IN :cards) " +
-                            "AND t.transactionDate BETWEEN :start AND :end",
-                    PaymentTransaction.class
+            String field = isExpense ? "t.sender" : "t.receiver";
+
+            Query<Object[]> query = session.createQuery(
+                    "SELECT DAY(t.transactionDate), SUM(t.amount) " +
+                            "FROM PaymentTransaction t " +
+                            "WHERE " + field + " IN :cards " +
+                            "AND t.transactionDate >= :startDate " +
+                            "AND t.transactionDate <= :endDate " +
+                            "GROUP BY DAY(t.transactionDate)",
+                    Object[].class
             );
             query.setParameter("cards", cardNumbers);
-            query.setParameter("start", startDateTime);
-            query.setParameter("end", endDateTime);
+            query.setParameter("startDate", firstDayOfMonth.atStartOfDay());
+            query.setParameter("endDate", now.atTime(23, 59, 59));
 
-            List<PaymentTransaction> transactions = query.getResultList();
+            List<Object[]> results = query.getResultList();
             session.getTransaction().commit();
 
-            List<Double> expenses = new ArrayList<>();
-            for (LocalDateTime dateTime = startDateTime.toLocalDate().atStartOfDay(); !dateTime.isAfter(endDateTime); dateTime = dateTime.plusDays(1)) {
-                expenses.add(0.0);
+            List<Double> dailySums = new ArrayList<>(Collections.nCopies(now.getDayOfMonth(), 0.0));
+
+            for (Object[] row : results) {
+                Integer day = (Integer) row[0];
+                Double sum = (Double) row[1];
+                if (day != null && day >= 1 && day <= now.getDayOfMonth()) {
+                    dailySums.set(day - 1, sum != null ? sum : 0.0);
+                }
             }
 
-            for (PaymentTransaction t : transactions) {
-                LocalDateTime txDateTime = t.getTransactionDate();
-                if (txDateTime.isBefore(startDateTime) || txDateTime.isAfter(endDateTime)) continue;
-                int dayIndex = txDateTime.getDayOfMonth() - 1;
-                expenses.set(dayIndex, expenses.get(dayIndex) + t.getAmount());
-            }
-
-            return expenses;
-
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            return Collections.emptyList();
-        } finally {
-            if (session != null && session.isOpen()) {
-                session.close();
-            }
-        }
-    }
-
-    public List<Double> getDailyDepositsByCards(List<BankCard> cards) {
-        Session session = null;
-        try {
-            session = factory.getCurrentSession();
-            session.beginTransaction();
-
-            List<String> cardNumbers = cards.stream()
-                    .map(BankCard::getCardNumber)
-                    .collect(Collectors.toList());
-
-            LocalDateTime startDateTime = LocalDate.now().atStartOfDay();
-            LocalDateTime endDateTime = LocalDateTime.now();
-
-            Query<PaymentTransaction> query = session.createQuery(
-                    "FROM PaymentTransaction t " +
-                            "WHERE (t.receiver IN :cards) " +
-                            "AND t.transactionDate BETWEEN :start AND :end",
-                    PaymentTransaction.class
-            );
-            query.setParameter("cards", cardNumbers);
-            query.setParameter("start", startDateTime);
-            query.setParameter("end", endDateTime);
-
-            List<PaymentTransaction> transactions = query.getResultList();
-            session.getTransaction().commit();
-
-            List<Double> deposits = new ArrayList<>();
-            for (LocalDateTime dateTime = startDateTime.toLocalDate().atStartOfDay(); !dateTime.isAfter(endDateTime); dateTime = dateTime.plusDays(1)) {
-                deposits.add(0.0);
-            }
-
-            for (PaymentTransaction t : transactions) {
-                LocalDateTime txDateTime = t.getTransactionDate();
-                if (txDateTime.isBefore(startDateTime) || txDateTime.isAfter(endDateTime)) continue;
-                int dayIndex = txDateTime.getDayOfMonth() - 1;
-                deposits.set(dayIndex, deposits.get(dayIndex) + t.getAmount());
-            }
-
-            return deposits;
+            return dailySums;
 
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
