@@ -2,6 +2,8 @@ package com.spring.bank.repositories;
 
 import com.spring.bank.models.BankAccount;
 import jakarta.transaction.Transactional;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,6 +18,10 @@ public class BankAccountRepository {
 
     private final SessionFactory factory = MainRepository.getFactory(BankAccount.class);
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    @Setter
+    @Getter
+    private BankAccount bankAccount;
 
     public List<BankAccount> getAllAccounts() {
         Session session = null;
@@ -175,5 +181,4 @@ public class BankAccountRepository {
             }
         }
     }
-
 }

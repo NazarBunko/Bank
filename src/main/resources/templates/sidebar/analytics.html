@@ -32,21 +32,23 @@
     console.log('Expenses:', expensesData);
     console.log('Deposits:', depositsData);
 
-    // Дати для графіків (можна змінити відповідно до ваших даних)
-    const dates = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26'];
+    // Динамічне створення масиву дат від 1 до поточної дати
+    const today = new Date();
+    const daysInMonth = today.getDate(); // Скільки днів пройшло в цьому місяці
+    const dates = Array.from({length: daysInMonth}, (_, i) => String(i + 1).padStart(2, '0'));
 
-    // Створення графіків за допомогою Plotly
+    // Функція побудови графіка
     function renderPlotlyChart(elementId, data, label, color) {
         const trace = {
             x: dates,
             y: data,
-            type: 'bar',  // Встановлюємо тип графіка на гістограму
+            type: 'bar',
             name: label,
             marker: {
-                color: color, // Використовуємо колір, переданий у функцію
-                opacity: 0.7, // Прозорість
+                color: color,
+                opacity: 0.7,
                 line: {
-                    color: color, // Колір обводки стовпців
+                    color: color,
                     width: 2
                 }
             }
@@ -54,27 +56,20 @@
 
         const layout = {
             title: label,
-            xaxis: {title: 'Дати'},
-            yaxis: {title: label},
+            xaxis: {title: 'Дати', tickangle: -45},
+            yaxis: {title: label, showgrid: true, zeroline: true},
             showlegend: true,
-            barmode: 'group',  // Групуємо стовпці по мітках
-            xaxis: {
-                tickangle: -45  // Поворот підписів осі X
-            },
-            yaxis: {
-                showgrid: true,
-                zeroline: true
-            },
-            staticPlot: true  // Забороняє маніпуляції з графіком
+            barmode: 'group',
+            staticPlot: true
         };
 
         Plotly.newPlot(elementId, [trace], layout);
     }
 
-    // Рендеринг графіків для витрат і депозитів з різними кольорами
-    renderPlotlyChart('expensesChart', expensesData, 'Витрати', 'rgb(255, 87, 51)');  // Колір для витрат
-    renderPlotlyChart('depositsChart', depositsData, 'Депозити', 'rgb(33, 150, 243)');  // Колір для депозитів
+    renderPlotlyChart('expensesChart', expensesData, 'Витрати', 'rgb(255, 87, 51)');
+    renderPlotlyChart('depositsChart', depositsData, 'Депозити', 'rgb(33, 150, 243)');
 </script>
+
 
 </body>
 </html>

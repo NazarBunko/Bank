@@ -54,9 +54,14 @@ public class BankCardRepository {
             card.setBalance(card.getBalance() + amount);
             Transaction transaction = session.beginTransaction();
             session.update(card);
-
             transaction.commit();
-            return true;
+
+            boolean newTransaction = createTransfer(method, cardNumber, amount, "replenish");
+            if (newTransaction) {
+                return true;
+            } else {
+                return false;
+            }
         } catch (Exception e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

@@ -4,9 +4,14 @@ import com.spring.bank.models.BankAccount;
 import com.spring.bank.models.Client;
 import com.spring.bank.repositories.BankAccountRepository;
 import com.spring.bank.repositories.ClientRepository;
+import com.spring.bank.service.CustomUserDetails;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Controller
@@ -52,7 +57,7 @@ public class MainController {
             Client client = new Client(fullName, birthDate, passportNumber, phone, address, clientType);
             clientRepository.addClient(client);
             client = clientRepository.getLastAddedClient();
-            BankAccount bankAccount = new BankAccount(client.getId(), login, password);
+            BankAccount bankAccount = new BankAccount(client.getId(), login, password, "ROLE_USER");
             bankAccountRepository.addAccount(bankAccount);
             return "redirect:/success";
         }

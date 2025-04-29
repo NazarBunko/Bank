@@ -20,7 +20,7 @@ public class BankAccount {
 
     @NotNull
     @Length(min = 4, max = 100)
-    @Column(name = "Login", nullable = false)
+    @Column(name = "Login", nullable = false, unique = true)
     private String login;
 
     @NotBlank
@@ -28,55 +28,66 @@ public class BankAccount {
     @Column(name = "Password", nullable = false)
     private String password;
 
+    @NotNull
+    @Column(name = "Role", nullable = false)
+    private String role; // ROLE_USER або ROLE_ADMIN
+
     public BankAccount() {}
 
-    public BankAccount(Integer clientId, String login, String password) {
+    public BankAccount(Integer clientId, String login, String password, String role) {
+        this.clientId = clientId;
         this.login = login;
         this.password = password;
-        this.clientId = clientId;
-    }
-
-    public void setClientId(Integer clientId) {
-        this.clientId = clientId;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login = login;
+        this.role = role;
     }
 
     public Integer getId() {
         return id;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
     public Integer getClientId() {
         return clientId;
     }
 
-    public void setClient(Integer clientId) {
-        this.clientId = clientId;
+    public String getLogin() {
+        return login;
     }
 
     public String getPassword() {
         return password;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setClientId(Integer clientId) {
+        this.clientId = clientId;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override
     public String toString() {
         return "BankAccount{" +
                 "id=" + id +
-                ", client=" + clientId +
+                ", clientId=" + clientId +
+                ", login='" + login + '\'' +
+                ", role='" + role + '\'' +
                 ", password='********'" +
                 '}';
     }

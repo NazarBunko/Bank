@@ -2,16 +2,15 @@ package com.spring.bank.controllers;
 
 import com.spring.bank.models.*;
 import com.spring.bank.repositories.*;
+import com.spring.bank.service.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -50,6 +49,7 @@ public class BankAccountController {
             bankAccount = account;
         } else{
             account = bankAccount;
+            bankAccountRepository.setBankAccount(account);
         }
 
         List<BankCard> cards = bankCardRepository.findByBankAccountId(account.getId());
@@ -134,6 +134,7 @@ public class BankAccountController {
     @GetMapping("/logOut")
     public String logout(HttpServletRequest request, HttpServletResponse response) {
         bankAccount = null;
+        bankAccountRepository.setBankAccount(null);
 
         HttpSession session = request.getSession(false);
         if (session != null) {

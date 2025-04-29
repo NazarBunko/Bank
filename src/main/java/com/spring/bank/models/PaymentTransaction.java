@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Data
 @Entity
@@ -43,8 +44,9 @@ public class PaymentTransaction {
         this.receiver = receiver;
         this.amount = amount;
         this.note = note;
-        this.transactionDate = LocalDateTime.now();
+        this.transactionDate = LocalDateTime.now(ZoneId.of("Europe/Kyiv"));
     }
+
 
     public LocalDateTime getTransactionDate() {
         return transactionDate;
