@@ -19,9 +19,15 @@ public class BankAccountRepository {
     private final SessionFactory factory = MainRepository.getFactory(BankAccount.class);
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @Setter
-    @Getter
     private BankAccount bankAccount;
+
+    public BankAccount getBankAccount() {
+        return bankAccount;
+    }
+
+    public void setBankAccount(BankAccount bankAccount) {
+        this.bankAccount = bankAccount;
+    }
 
     public List<BankAccount> getAllAccounts() {
         Session session = null;

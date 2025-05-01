@@ -98,12 +98,20 @@ public class BankCard {
         this.bankAccountId = bankAccountId;
     }
 
-    public Integer getCvv() {
+    public @NotNull Integer getCvv() {
         return cvv;
+    }
+
+    public void setCvv(@NotNull Integer cvv) {
+        this.cvv = cvv;
     }
 
     public LocalDate getEndDate() {
         return endDate;
+    }
+
+    public void setEndDate(LocalDate endDate) {
+        this.endDate = endDate;
     }
 
     @Override

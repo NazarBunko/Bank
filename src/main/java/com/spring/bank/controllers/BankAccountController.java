@@ -87,7 +87,7 @@ public class BankAccountController {
         try{
             card.setCardType(cardType);
             card.setBankAccountId(bankAccount.getId());
-            card.setBalance(0.0);
+            card.setBalance(0.00);
             bankCardRepository.addCard(card);
 
             BankAccount account = bankAccountRepository.findByLogin(principal.getName());
@@ -208,9 +208,6 @@ public class BankAccountController {
         List<BankCard> cards = bankCardRepository.findByBankAccountId(bankAccount.getId());
         List<Double> expenses = transactionRepository.getDailyTransactionSumsByCards(cards, true);
         List<Double> deposits = transactionRepository.getDailyTransactionSumsByCards(cards, false);
-
-        System.out.println(expenses);
-        System.out.println(deposits);
 
         model.addAttribute("expenses", expenses);
         model.addAttribute("deposits", deposits);

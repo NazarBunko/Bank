@@ -74,7 +74,8 @@
                 <div><strong>Термін:</strong> <span th:text="${card.getEndDate()}">12/25</span></div>
               </div>
               <div class="card-balance">
-                <strong>Баланс:</strong> <span th:text="${#numbers.formatDecimal(card.getBalance(), 0, '2') + ' UAH'}">0.00 UAH</span></div>
+                <strong>Баланс:</strong> <span th:text="${#numbers.formatDecimal(card.getBalance(), 1, '2', 'POINT')} + ' UAH'">0.00 UAH</span>
+              </div>
               <!-- Додаємо тип картки -->
               <div class="card-type" th:text="${card.getCardType()}">Тип картки</div>
             </div>

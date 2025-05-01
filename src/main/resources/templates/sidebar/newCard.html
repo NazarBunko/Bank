@@ -15,21 +15,22 @@
     <!-- Номер картки -->
     <div class="form-group">
       <label>Номер картки</label>
-      <input type="text" th:value="*{cardNumber}" readonly class="readonly"/>
-      <input type="hidden" th:field="*{cardNumber}"/>
+      <input type="text" th:field="*{cardNumber}" readonly class="readonly"/>
     </div>
 
     <!-- CVV -->
     <div class="form-group">
       <label>CVV</label>
-      <input type="text" th:value="*{cvv}" readonly class="readonly"/>
-      <input type="hidden" th:field="*{cvv}"/>
+      <input type="text" th:field="*{cvv}" readonly class="readonly"/>
     </div>
 
     <!-- Термін дії -->
     <div class="form-group">
       <label>Термін дії</label>
-      <input type="text" th:value="${#temporals.format(bankCard.endDate, 'MM/yy')}" readonly class="readonly"/>
+      <input type="text"
+             th:value="${#temporals.format(bankCard.endDate, 'yyyy-MM-dd')}"
+             readonly class="readonly"/>
+      <!-- приховане поле з ISO-форматом для передачі -->
       <input type="hidden" th:field="*{endDate}"/>
     </div>
 
@@ -38,8 +39,8 @@
       <label>Тип картки</label>
       <select th:field="*{cardType}" required>
         <option value="">-- Виберіть тип --</option>
-        <option value="Універсальна" th:selected="*{cardType == 'Універсальна'}">Універсальна</option>
-        <option value="Кредитна" th:selected="*{cardType == 'Кредитна'}">Кредитна</option>
+        <option value="Універсальна">Універсальна</option>
+        <option value="Кредитна">Кредитна</option>
       </select>
     </div>
 
